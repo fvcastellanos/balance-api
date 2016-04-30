@@ -14,13 +14,18 @@ namespace balance_api.Controllers
     {
         private IEventMappingDao eventMappingDao;
         
+        public ValuesController(IEventMappingDao eventMappingDao)
+        {
+            this.eventMappingDao = eventMappingDao;
+        }
 
         // GET: api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            eventMappingDao.findAll();
-            return new string[] { "value1", "value2" };
+            //            List<EventMapping> mappings = eventMappingDao.findAll();
+            //            return new string[] { "value1",  mappings.Count.ToString() };
+            return new string[] { "asdf", "asdf" };
         }
 
         // GET api/values/5

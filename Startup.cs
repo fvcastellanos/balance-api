@@ -36,6 +36,7 @@ namespace balance_api
             // Application services
             services.AddSingleton<AppSettingsHelper, AppSettingsHelper>();
             services.AddSingleton<IEventMappingDao, EventMappingDao>();
+            services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +50,10 @@ namespace balance_api
             app.UseStaticFiles();
 
             app.UseMvc();
+
+//            app.UseMvc(routes => {
+//                routes.MapRoute(name: "account", template: "{controller}=Account/{action}=Get");
+//            });
         }
 
         // Entry point for the application.

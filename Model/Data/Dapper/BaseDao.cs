@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 using Configuration;
 
@@ -9,14 +9,20 @@ namespace Model.Data.Dapper
     public abstract class BaseDao
     {
         protected AppSettingsHelper settingsHelper;
+
+        protected BaseDao(AppSettingsHelper settingsHelper)
+        {
+            this.settingsHelper = settingsHelper;
+        }
         
         protected IDbConnection getConnection() 
         {
             try
             {
-                return new SqlConnection(settingsHelper.getConnectionString());
+                return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=kakaroto;");
+                
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ex.ToString();
             } 
