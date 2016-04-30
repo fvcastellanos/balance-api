@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "balance-api", "balance-api.xproj", "{715BFFAC-B47A-447A-87E2-C296A1810E68}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BalanceApi", "BalanceApi.xproj", "{715BFFAC-B47A-447A-87E2-C296A1810E68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

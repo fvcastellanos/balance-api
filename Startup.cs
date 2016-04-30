@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Configuration;
+using Services;
 using Model.Data;
 using Model.Data.Dapper;
 
@@ -37,6 +38,8 @@ namespace balance_api
             services.AddSingleton<AppSettingsHelper, AppSettingsHelper>();
             services.AddSingleton<IEventMappingDao, EventMappingDao>();
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
+
+            services.AddSingleton<AccountTypeService, AccountTypeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

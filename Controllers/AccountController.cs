@@ -6,7 +6,7 @@ using Model.Domain;
 using Model.Data;
 using Microsoft.Extensions.Logging;
 
-namespace balance_api.Controllers
+namespace BalanceApi.Controllers
 {
     [Route("api/[controller]")]
     public class AccountController : Controller
@@ -33,10 +33,5 @@ namespace balance_api.Controllers
             return accountTypeDao.findById(id);
         }
 
-        [HttpGet("{name}")]
-        public AccountType GetByName(string name)
-        {
-            return accountTypeDao.findByName(name);
-        }
     }
 }

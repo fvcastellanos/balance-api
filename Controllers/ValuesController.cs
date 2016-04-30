@@ -7,7 +7,7 @@ using Microsoft.AspNet.Mvc;
 using Model.Data;
 using Model.Domain;
 
-namespace balance_api.Controllers
+namespace BalanceApi.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
@@ -23,8 +23,6 @@ namespace balance_api.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            //            List<EventMapping> mappings = eventMappingDao.findAll();
-            //            return new string[] { "value1",  mappings.Count.ToString() };
             return new string[] { "asdf", "asdf" };
         }
 
