@@ -16,7 +16,10 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Debug" : "1.0.0-rc1-final",
+    "System.Configuration.Abstractions": "2.0.2.26",
+    "MySQL.NET": "6.6.4",
     "Dapper": "1.42.0"
+    
   },
 
   "commands": {
@@ -26,8 +29,7 @@
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "System.Collections": "4.0.10",
-        "System.Data.Common": "4.0.0"
+        "Mono.CSharp": "4.0.0.143"
       }
      }
   },

@@ -8,6 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using Configuration;
+using Model.Data;
+using Model.Data.Dapper;
+
 namespace balance_api
 {
     public class Startup
@@ -28,6 +32,10 @@ namespace balance_api
         {
             // Add framework services.
             services.AddMvc();
+            
+            // Application services
+            services.AddSingleton<AppSettingsHelper, AppSettingsHelper>();
+            services.AddSingleton<IEventMappingDao, EventMappingDao>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

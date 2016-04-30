@@ -1,10 +1,11 @@
 
 using System.Collections.Generic;
+using Model.Domain;
 
 namespace Model.Data
 {
     public interface IEventMappingDao
     {
-        IEnumerable<long> findAll();
+        List<EventMapping> findAll();
     }
 }
