@@ -31,11 +31,6 @@
       "dependencies": {
         "Mono.CSharp": "4.0.0.143"
       }
-    },
-    "dnx50": {
-      "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23516"
-      }
     }
   },
 
