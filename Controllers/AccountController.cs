@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
 
-using Model.Domain;
-using Model.Data;
+using BalanceApi.Model.Domain;
+using BalanceApi.Model.Data;
 using Microsoft.Extensions.Logging;
 
 namespace BalanceApi.Controllers

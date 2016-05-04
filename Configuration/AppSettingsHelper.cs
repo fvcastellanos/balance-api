@@ -1,7 +1,7 @@
 
 using System.Configuration;
 
-namespace Configuration
+namespace BalanceApi.Configuration
 {
     public class AppSettingsHelper 
     {

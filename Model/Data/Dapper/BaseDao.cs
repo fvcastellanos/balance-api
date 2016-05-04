@@ -2,9 +2,9 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 
-using Configuration;
+using BalanceApi.Configuration;
 
-namespace Model.Data.Dapper
+namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {

@@ -1,9 +1,9 @@
 ﻿
 using System.Collections.Generic;
 
-using Model.Domain;
+using BalanceApi.Model.Domain;
 
-namespace Model.Data
+namespace BalanceApi.Model.Data
 {
     public interface IAccountTypeDao
     {

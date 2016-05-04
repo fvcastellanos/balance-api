@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using Configuration;
-using Services;
-using Model.Data;
-using Model.Data.Dapper;
+using BalanceApi.Configuration;
+using BalanceApi.Services;
+using BalanceApi.Model.Data;
+using BalanceApi.Model.Data.Dapper;
 
 namespace balance_api
 {
@@ -36,7 +32,6 @@ namespace balance_api
             
             // Application services
             services.AddSingleton<AppSettingsHelper, AppSettingsHelper>();
-            services.AddSingleton<IEventMappingDao, EventMappingDao>();
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
 
             services.AddSingleton<AccountTypeService, AccountTypeService>();
@@ -53,10 +48,6 @@ namespace balance_api
             app.UseStaticFiles();
 
             app.UseMvc();
-
-//            app.UseMvc(routes => {
-//                routes.MapRoute(name: "account", template: "{controller}=Account/{action}=Get");
-//            });
         }
 
         // Entry point for the application.

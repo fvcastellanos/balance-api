@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-using Model.Domain;
-using Model.Data;
+using BalanceApi.Model.Domain;
+using BalanceApi.Model.Data;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Services
+namespace BalanceApi.Services
 {
     public class AccountTypeService
     {

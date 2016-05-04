@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using Dapper;
-using Model.Domain;
-using Configuration;
+using BalanceApi.Model.Domain;
+using BalanceApi.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Model.Data.Dapper
+namespace BalanceApi.Model.Data.Dapper
 {
     public class AccountTypeDao : BaseDao, IAccountTypeDao
     {

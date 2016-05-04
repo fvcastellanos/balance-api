@@ -1,24 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
-
-using Model.Data;
-using Model.Domain;
 
 namespace BalanceApi.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private IEventMappingDao eventMappingDao;
-        
-        public ValuesController(IEventMappingDao eventMappingDao)
-        {
-            this.eventMappingDao = eventMappingDao;
-        }
-
         // GET: api/values
         [HttpGet]
         public IEnumerable<string> Get()
@@ -49,12 +36,6 @@ namespace BalanceApi.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-        }
-        
-        // GET api/values
-        //[HttpGet]
-        public List<EventMapping> GetEventMappings() {
-            return eventMappingDao.findAll();
         }
     }
 }

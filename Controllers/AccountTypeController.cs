@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
-
-using Model.Domain;
-using Services;
 using Microsoft.Extensions.Logging;
+
+using BalanceApi.Model.Domain;
+using BalanceApi.Services;
 
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace BalanceApi.Controllers
 {
     [Route("api/[controller]")]
