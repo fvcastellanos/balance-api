@@ -1,5 +1,6 @@
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,10 +10,12 @@ using BalanceApi.Services;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Data.Dapper;
 
-namespace balance_api
+namespace BalanceApi
 {
     public class Startup
     {
+        public IConfigurationRoot Configuration { get; set; }
+
         public Startup(IHostingEnvironment env)
         {
             // Set up configuration sources.
@@ -22,14 +25,12 @@ namespace balance_api
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; set; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
-            
+            services.AddLogging();
+
             // Application services
             services.AddSingleton<AppSettingsHelper, AppSettingsHelper>();
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
@@ -43,14 +44,11 @@ namespace balance_api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseIISPlatformHandler();
+            // app.UseIISPlatformHandler();
 
-            app.UseStaticFiles();
+            // app.UseStaticFiles();
 
             app.UseMvc();
         }
-
-        // Entry point for the application.
-        public static void Main(string[] args) => Microsoft.AspNet.Hosting.WebApplication.Run<Startup>(args);
     }
 }

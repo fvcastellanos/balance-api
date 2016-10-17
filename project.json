@@ -1,46 +1,28 @@
 {
   "version": "1.0.0-*",
-  "compilationOptions": {
+  "buildOptions": {
+    "debugType": "portable",
     "emitEntryPoint": true
   },
-  "tooling": {
-    "defaultNamespace": "BalanceApi"
-  },
-
-  "dependencies": {
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.FileProviderExtensions" : "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Debug" : "1.0.0-rc1-final",
-    "System.Configuration.Abstractions": "2.0.2.26",
-    "MySQL.NET": "6.6.4",
-    "Dapper": "1.42.0"
-    
-  },
-
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel"
-  },
-
+  "dependencies": {},
   "frameworks": {
-    "dnx451": {
+    "netcoreapp1.0": {
       "dependencies": {
-        "Mono.CSharp": "4.0.0.143"
-      }
-    }
-  },
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        },
 
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components"
-  ],
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ]
+        "Microsoft.AspNetCore.Server.Kestrel" : "1.0.0",
+        "Microsoft.AspNetCore.Mvc": "1.0.1",
+        "Microsoft.Extensions.Logging" : "1.0.0",
+        "Microsoft.Extensions.Logging.Console": "1.0.0",
+        "Microsoft.Extensions.Logging.Debug": "1.0.0",
+        "MySql.Data.Core": "7.0.4-ir-191",
+        "Dapper" : "1.50.2"
+        
+      },
+      "imports": "dnxcore50"
+    }
+  }
 }

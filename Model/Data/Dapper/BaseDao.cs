@@ -19,7 +19,7 @@ namespace BalanceApi.Model.Data.Dapper
         {
             try
             {
-                return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=kakaroto;");
+                return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=r00t;");
                 
             }
             catch (Exception ex)
