@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Dapper;
 using BalanceApi.Model.Domain;
-using BalanceApi.Configuration;
 using Microsoft.Extensions.Logging;
+using BalanceApi.Domain;
 
 namespace BalanceApi.Model.Data.Dapper
 {
@@ -12,8 +12,8 @@ namespace BalanceApi.Model.Data.Dapper
     {
         private ILogger<AccountTypeDao> logger;
 
-        public AccountTypeDao(AppSettingsHelper settingsHelper, 
-            ILogger<AccountTypeDao> logger) : base(settingsHelper)
+        public AccountTypeDao(AppSettings settings, 
+            ILogger<AccountTypeDao> logger) : base(settings, logger)
         {
             this.logger = logger;
         }

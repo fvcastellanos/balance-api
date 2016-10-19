@@ -9,7 +9,7 @@ using BalanceApi.Services;
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 namespace BalanceApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account-type")]
     public class AccountTypeController : Controller
     {
         private ILogger<AccountTypeController> logger;
@@ -23,6 +23,7 @@ namespace BalanceApi.Controllers
         }
 
         [HttpGet]
+        [Route("/")]
         public Response<List<AccountType>> GetAll()
         {
             return service.GetAccountTypes();

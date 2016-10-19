@@ -2,24 +2,29 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 
-using BalanceApi.Configuration;
+using Microsoft.Extensions.Logging;
+using BalanceApi.Domain;
 
 namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {
-        protected AppSettingsHelper settingsHelper;
+        protected AppSettings Settings;
 
-        protected BaseDao(AppSettingsHelper settingsHelper)
+        protected ILogger Logger; 
+        protected BaseDao(AppSettings Settings, ILogger Logger)
         {
-            this.settingsHelper = settingsHelper;
+            this.Settings = Settings;
+            this.Logger = Logger;
         }
         
         protected IDbConnection getConnection() 
         {
             try
             {
-                return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=r00t;");
+                Logger.LogInformation("Getting DB connection");
+                return new MySqlConnection(Settings.ConnectionString);
+                // return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=r00t;");
                 
             }
             catch (Exception ex)
