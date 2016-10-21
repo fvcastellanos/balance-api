@@ -9,6 +9,8 @@ using BalanceApi.Model.Data;
 using BalanceApi.Model.Data.Dapper;
 using BalanceApi.Domain;
 
+using System.IO;
+
 namespace BalanceApi
 {
     public class Startup
@@ -19,10 +21,12 @@ namespace BalanceApi
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory()) // Not completely sure if this gonna work on production
                 // .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 ;
+
             Configuration = builder.Build();
         }
 
@@ -35,10 +39,6 @@ namespace BalanceApi
             services.AddMvc();
 
             services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
-
-
-            // Application Settings
-            // services.AddSingleton(Configuration.GetSection("AppSettings"));
 
             // Data Repositories
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();

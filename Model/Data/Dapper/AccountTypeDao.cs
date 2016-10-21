@@ -24,7 +24,7 @@ namespace BalanceApi.Model.Data.Dapper
             try
             {
                 logger.LogInformation("Getting account types");
-                return getConnection().Query<AccountType>("select account_type_id id, name from account_type").AsList();
+                return getConnection().Query<AccountType>("select id, name from account_type").AsList();
             }
             catch(Exception ex)
             {
@@ -38,7 +38,7 @@ namespace BalanceApi.Model.Data.Dapper
             try
             {
                 logger.LogInformation("Getting account type with Id: {0}", id);
-                return getConnection().Query<AccountType>("select account_type_id id, name from account_type " +
+                return getConnection().Query<AccountType>("select id, name from account_type " +
                     " where account_type_id = @Id", new { Id = id }).Single<AccountType>();
             }
             catch(Exception ex)
@@ -53,7 +53,7 @@ namespace BalanceApi.Model.Data.Dapper
             try
             {
                 logger.LogInformation("Getting account type with name: {0}", name);
-                return getConnection().Query<AccountType>("select account_type_id id, name from account_type " +
+                return getConnection().Query<AccountType>("select id, name from account_type " +
                     " where name = @Name", new { Name = name }).Single<AccountType>();
             }
             catch (Exception ex)
