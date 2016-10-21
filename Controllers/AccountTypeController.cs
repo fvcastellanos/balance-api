@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
-using BalanceApi.Model.Domain;
 using BalanceApi.Services;
+using BalanceApi.Domain;
+using BalanceApi.Model.Domain;
 
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,14 +24,14 @@ namespace BalanceApi.Controllers
         }
 
         [HttpGet]
-        [Route("/")]
-        public Response<List<AccountType>> GetAll()
+        public IActionResult GetAll()
         {
-            return service.GetAccountTypes();
+            Result result = service.GetAccountTypes();
+            if(result.isSuccess()) {
+                return Ok(result.getObject<List<AccountType>>());
+            } else {
+                return BadRequest(result.getException());
+            }
         }
-
-
-
-        
     }
 }

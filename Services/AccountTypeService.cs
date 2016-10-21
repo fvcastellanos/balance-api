@@ -4,6 +4,7 @@ using BalanceApi.Model.Domain;
 using BalanceApi.Model.Data;
 using Microsoft.Extensions.Logging;
 using System;
+using BalanceApi.Domain;
 
 namespace BalanceApi.Services
 {
@@ -19,20 +20,17 @@ namespace BalanceApi.Services
             this.logger = logger;
         }
 
-        public Response<List<AccountType>> GetAccountTypes()
+        public Result GetAccountTypes()
         {
-            Response<List<AccountType>> response = null;
-            try
-            {
+            try {
+                logger.LogInformation("Getting all the account types");
                 List<AccountType> list = accountTypeDao.findAll();
-                response = new Response<List<AccountType>>(200, "OK", list);
+                return Result.forSuccess(list);
             }
-            catch(Exception ex)
-            {
-                logger.LogError("Unable to get account types", ex);
-                response = new Response<List<AccountType>>(500, "ERROR", null);
+            catch(Exception ex) {
+                logger.LogError("Unable to get the account types, {0}", ex);
+                return Result.forException(ex);
             }
-            return response;
         }
     }
 }

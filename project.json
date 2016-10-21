@@ -18,11 +18,15 @@
         "Microsoft.Extensions.Logging" : "1.0.0",
         "Microsoft.Extensions.Logging.Console": "1.0.0",
         "Microsoft.Extensions.Logging.Debug": "1.0.0",
+        "Microsoft.Extensions.Configuration.Binder" : "1.0.0",
         "MySql.Data.Core": "7.0.4-ir-191",
         "Dapper" : "1.50.2"
         
       },
       "imports": "dnxcore50"
     }
+  },
+  "runtimes": {
+    "dnxcore50": "1.0.1"
   }
 }

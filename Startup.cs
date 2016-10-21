@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using BalanceApi.Services;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Data.Dapper;
+using BalanceApi.Domain;
 
 namespace BalanceApi
 {
@@ -18,7 +19,7 @@ namespace BalanceApi
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
+                // .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 ;
@@ -31,15 +32,19 @@ namespace BalanceApi
             // Add framework services.
             services.AddLogging();
             services.AddOptions();
+            services.AddMvc();
 
-            services.AddSingleton(Configuration.GetSection("AppSettings"));
+            services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
 
-            // Application services
+
+            // Application Settings
+            // services.AddSingleton(Configuration.GetSection("AppSettings"));
+
+            // Data Repositories
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
 
+            // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
-
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
