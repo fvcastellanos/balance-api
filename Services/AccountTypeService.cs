@@ -32,5 +32,30 @@ namespace BalanceApi.Services
                 return Result.forException(ex);
             }
         }
+
+        public Result GetAccountTypeById(long id) {
+            try {
+                logger.LogInformation("Getting Account Type for id: {0}", id);
+                AccountType accountType = accountTypeDao.findById(id);
+                return Result.forSuccess(accountType);
+            } catch(Exception ex) {
+                logger.LogError("Unable to get the account type: {0}, due: {1}", id, ex);
+                return Result.forException(ex);
+            }
+        }
+
+        public Result newAccountType(AccountType accountType) {
+            try {
+                if((accountType != null) && (accountType.name != null)) {
+                    long value = accountTypeDao.addNew(accountType.name);
+                    return Result.forSuccess(new AccountType(value, accountType.name));
+                } else {
+                    return Result.forException(new Exception("Can't create account type"));
+                }
+            } catch(Exception ex) {
+                logger.LogError("Unable to create a new account type due: {0}", ex);
+                return Result.forException(ex);
+            }
+        }
     }
 }

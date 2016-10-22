@@ -11,7 +11,7 @@ using BalanceApi.Model.Domain;
 namespace BalanceApi.Controllers
 {
     [Route("api/account-type")]
-    public class AccountTypeController : Controller
+    public class AccountTypeController : BaseController
     {
         private ILogger<AccountTypeController> logger;
         private AccountTypeService service;
@@ -30,7 +30,37 @@ namespace BalanceApi.Controllers
             if(result.isSuccess()) {
                 return Ok(result.getObject<List<AccountType>>());
             } else {
-                return BadRequest(result.getException());
+                return internalServerError(result.getException());
+            }
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(long id) {
+            Result result = service.GetAccountTypeById(id);
+            if(result.isSuccess()) {
+                AccountType accountType = result.getObject<AccountType>();
+                if(accountType != null) {
+                    return Ok(accountType);
+                } else {
+                    return NotFound();
+                }
+            } else {
+                return internalServerError(result.getException());
+            }
+        }
+
+        [HttpPost]
+        public IActionResult New( [FromBody] AccountType accountType) {
+            Result result = service.newAccountType(accountType);
+            if(result.isSuccess()) {
+                AccountType item = result.getObject<AccountType>();
+                if(item != null) {
+                    return Created("New", item);
+                } else {
+                    return BadRequest();
+                }
+            } else {
+                return internalServerError(result.getException());
             }
         }
     }

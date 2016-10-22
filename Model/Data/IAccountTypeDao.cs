@@ -9,5 +9,6 @@ namespace BalanceApi.Model.Data
         List<AccountType> findAll();
         AccountType findById(long id);
         AccountType findByName(string name);
+        long addNew(string name);
     }
 }

@@ -39,7 +39,7 @@ namespace BalanceApi.Model.Data.Dapper
             {
                 logger.LogInformation("Getting account type with Id: {0}", id);
                 return getConnection().Query<AccountType>("select id, name from account_type " +
-                    " where account_type_id = @Id", new { Id = id }).Single<AccountType>();
+                    " where id = @Id", new { Id = id }).SingleOrDefault<AccountType>();
             }
             catch(Exception ex)
             {
@@ -54,14 +54,30 @@ namespace BalanceApi.Model.Data.Dapper
             {
                 logger.LogInformation("Getting account type with name: {0}", name);
                 return getConnection().Query<AccountType>("select id, name from account_type " +
-                    " where name = @Name", new { Name = name }).Single<AccountType>();
+                    " where name = @Name", new { Name = name }).SingleOrDefault<AccountType>();
             }
             catch (Exception ex)
             {
                 logger.LogError("Unable to perform the query", ex);
+                throw ex;
             }
-
-            return null;
         }
+
+        public long addNew(string name) {
+            try {
+                long id = 0;
+                int rows = getConnection().Execute("insert into account_type (name) values (@Name)", new { Name = name });
+                if(rows > 0) {
+                    id = getConnection().Query<long>("select LAST_INSERT_ID()").Single();
+                }
+
+                return id;
+            } catch(Exception ex) {
+                logger.LogError("Unable to create an account type of name: {0}", name);
+                throw ex;
+            }
+        }
+
+
     }
 }
