@@ -68,7 +68,7 @@ namespace BalanceApi.Controllers
         public IActionResult Update([FromBody] AccountType accountType) {
             Result result = service.updateAccountType(accountType);
             if(result.isSuccess()) {
-                return Created("Updated", result.getObject<AccountType>());
+                return Ok(result.getObject<AccountType>());
             } else {
                 return internalServerError(result.getException().Message);
             }
@@ -80,7 +80,7 @@ namespace BalanceApi.Controllers
             if(result.isSuccess()) {
                 int rows = result.getObject<int>();
                 if(rows > 0) {
-                    return Created("Delete", rows);
+                    return Accepted(rows);
                 } else {
                     return NotFound();
                 }
