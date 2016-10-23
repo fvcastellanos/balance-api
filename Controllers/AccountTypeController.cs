@@ -60,7 +60,32 @@ namespace BalanceApi.Controllers
                     return BadRequest();
                 }
             } else {
-                return internalServerError(result.getException());
+                return internalServerError(result.getException().Message);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] AccountType accountType) {
+            Result result = service.updateAccountType(accountType);
+            if(result.isSuccess()) {
+                return Ok(result.getObject<AccountType>());
+            } else {
+                return internalServerError(result.getException().Message);
+            }
+        }
+
+        [HttpDeleteAttribute("{id}")]
+        public IActionResult Delete(long id) {
+            Result result = service.deleteAccountType(id);
+            if(result.isSuccess()) {
+                int rows = result.getObject<int>();
+                if(rows > 0) {
+                    return Accepted(rows);
+                } else {
+                    return NotFound();
+                }
+            } else {
+                return internalServerError(result.getException().Message);
             }
         }
     }
