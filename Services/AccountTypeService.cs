@@ -57,5 +57,32 @@ namespace BalanceApi.Services
                 return Result.forException(ex);
             }
         }
+
+        public Result deleteAccountType(long id) {
+            try {
+                logger.LogInformation("Trying to delete account type with id: {0}", id);
+                int rows = accountTypeDao.delete(id);
+                if(rows > 0) {
+                    return Result.forSuccess(rows);
+                } else {
+                    return Result.forException(new Exception("No account type with id: {0} was deleted"));
+                }
+            } catch(Exception ex) {
+                logger.LogError("Unable to delete account type with id: {0}, due: {1}", id, ex);
+                return Result.forException(ex);
+            }
+        }
+
+        public Result updateAccountType(AccountType accountType) {
+            try {
+                logger.LogInformation("Updating account type: {0}", accountType);
+                AccountType at = accountTypeDao.update(accountType);
+                return Result.forSuccess(at);
+            } catch(Exception ex) {
+                logger.LogError("Unable to update account type with id: {0}, due: {1}", accountType, ex);
+                return Result.forException(ex);
+            }
+            
+        }
     }
 }
