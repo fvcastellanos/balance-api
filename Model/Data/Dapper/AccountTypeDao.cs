@@ -78,6 +78,28 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
+        public int delete(long id) {
+            try {
+                int rows = getConnection().Execute("delete from account_type where id = @Id", new {Id = id});
+                return rows;
+            } catch(Exception ex) {
+                logger.LogError("Unable to delete account type with id: {0}", id);
+                throw ex;
+            }
+        }
+
+        public AccountType update(AccountType accountType) {
+            try {
+                getConnection().Execute("update account_type set name = @Name where id = @Id", 
+                    new {Name = accountType.name, Id = accountType.id});
+
+                return findById(accountType.id);
+            } catch(Exception ex) {
+                logger.LogError("Unable to update account type due: {0}", ex.Message);
+                throw ex;
+            }
+        }
+
 
     }
 }

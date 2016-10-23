@@ -10,5 +10,7 @@ namespace BalanceApi.Model.Data
         AccountType findById(long id);
         AccountType findByName(string name);
         long addNew(string name);
+        int delete(long id);
+        AccountType update(AccountType accountType);
     }
 }
