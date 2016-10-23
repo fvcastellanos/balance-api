@@ -22,18 +22,18 @@ To run SQL scripts (database migrations) [flyway db]https://flywaydb.org/documen
 
 ### Migrating
 
-Just go to ```ssh Migrations ``` directory and execute ```ssh migrate.sh ``` script
+Just go to ``` Migrations ``` directory and execute ``` migrate.sh ``` script
 
-```ssh
+```bash
 cd Migrations
 ./migrate.sh
 ```
 
 ### Cleaning db
 
-Just go to ```ssh Migrations ``` directory and execute ```ssh clean.sh ``` script
+Just go to ``` Migrations ``` directory and execute ``` clean.sh ``` script
 
-```ssh
+```bash
 cd Migrations
 ./clean.sh
 ```
