@@ -25,12 +25,9 @@ namespace BalanceApi.Model.Data.Dapper
             {
                 Logger.LogInformation("Getting DB connection");
                 return new MySqlConnection(Settings.ConnectionString);
-                // return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=r00t;");
-                
             }
             catch (Exception ex)
             {
-                Logger.LogError("Unable to create db connection", ex);
                 throw ex;
             } 
         }

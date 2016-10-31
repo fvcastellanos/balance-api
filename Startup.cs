@@ -42,9 +42,11 @@ namespace BalanceApi
 
             // Data Repositories
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
+            services.AddSingleton<IProviderDao, ProviderDao>();
 
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
+            services.AddSingleton<ProviderService, ProviderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

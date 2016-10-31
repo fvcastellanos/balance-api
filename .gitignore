@@ -235,3 +235,8 @@ _Pvt_Extensions
 
 # VS Code
 .vscode/
+
+# Visual Studio
+*.sln
+*.xproj
+*.xproj.user
