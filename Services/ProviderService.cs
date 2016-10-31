@@ -27,5 +27,27 @@ namespace BalanceApi.Services
                 return Result.forException(ex);
             }
         }
+
+        public Result GetById(long id) {
+            try {
+                logger.LogInformation("Getting provider with id: {0}", id);
+                Provider provider = providerDao.GetById(id);
+                return Result.forSuccess(provider);
+            } catch (Exception ex) {
+                return Result.forException(ex);
+            }
+        }
+
+        public Result GetByCountry(string country) {
+            try {
+                logger.LogInformation("Getting provider for country: {0}", country);
+                List<Provider> providers = providerDao.GetByCountry(country);
+                return Result.forSuccess(providers);
+            } catch(Exception ex) {
+                return Result.forException(ex);
+            }
+        }
+
+        
     }
 }

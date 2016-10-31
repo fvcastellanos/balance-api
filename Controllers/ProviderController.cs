@@ -26,7 +26,32 @@ namespace BalanceApi.Controllers {
                 return Ok(result.getObject<List<Provider>>());
             } else {
                 logger.LogError("Unable to get the providers due: {0}", result.getException());
-                return internalServerError(result.getException());
+                return ForException(result.getException());
+            }
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(long id) {
+            Result result = Service.GetById(id);
+            if(result.isSuccess()) {
+                Provider provider = result.getObject<Provider>();
+                if(provider != null) {
+                    return Ok(provider);
+                } else {
+                    return NotFound();
+                }
+            } else {
+                return ForException(result.getException());
+            }
+        }
+
+        [HttpGet("/country/{country}")]
+        public IActionResult GetByCountry(string country) {
+            Result result = Service.GetByCountry(country);
+            if(result.isSuccess()) {
+                return Ok(result.getObject<List<Provider>>());
+            } else {
+                return ForException(result.getException());
             }
         }
     }
