@@ -17,6 +17,8 @@ namespace BalanceApi.Model.Data.Dapper {
         private static string GET_ALL = "select * from provider";
         private static string GET_BY_COUNTRY = "select * from provider where country = @Country";
         private static string GET_BY_ID = "select * from provider where id = @Id";
+        private static string FIND_PROVIDER = "select * from provider where name = @Name and country = @Country";
+        private static string NEW = "insert into provider (name, country) values (@Name, @Country)";
 
         public ProviderDao(IOptions<AppSettings> settings,  ILogger<ProviderDao> logger) : base(settings, logger)
         {
@@ -32,7 +34,7 @@ namespace BalanceApi.Model.Data.Dapper {
             }
         }
 
-        List<Provider> IProviderDao.GetByCountry(string country)
+        public List<Provider> GetByCountry(string country)
         {
             try {
                 return getConnection().Query<Provider>(GET_BY_COUNTRY, new { Country = country }).AsList();
@@ -41,7 +43,7 @@ namespace BalanceApi.Model.Data.Dapper {
             }            
         }
 
-        Provider IProviderDao.GetById(long id)
+        public Provider GetById(long id)
         {
             try {
                 return getConnection().Query<Provider>(GET_BY_ID, new { Id = id }).SingleOrDefault();
@@ -49,5 +51,29 @@ namespace BalanceApi.Model.Data.Dapper {
                 throw ex;
             }
         }
+
+        public Provider FindProvider(string name, string country) {
+            try {
+                return getConnection().Query<Provider>(FIND_PROVIDER, new { Name = name, Country = country }).SingleOrDefault();
+            } catch(Exception ex) {
+                throw ex;
+            }
+        }
+
+        public long New(string name, string country) {
+            try {
+                long id = 0;
+                int rows = getConnection().Execute(NEW, new { Name = name, Country = country});
+                if(rows > 0) {
+                    id = GetLasInsertedId();
+                }
+
+                return id;
+            } catch(Exception ex) {
+                throw ex;
+            }
+        }
+
+        
     }
 }

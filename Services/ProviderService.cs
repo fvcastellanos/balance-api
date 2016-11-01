@@ -48,6 +48,34 @@ namespace BalanceApi.Services
             }
         }
 
+        private bool IsValid(Provider provider) {
+            if(provider == null) {
+                return false;
+            }
+
+            if((provider.name == null) || (provider.country == null)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public Result New(Provider provider) {
+            try {
+                if(IsValid(provider)) {
+                    logger.LogInformation("Adding a new provider with name: {0} and country: {1}", provider.name, provider.country);
+                    long id = providerDao.New(provider.name, provider.country);
+                    Provider newProvider = providerDao.GetById(id);
+                    return Result.forSuccess(newProvider);
+                } else {
+                    return Result.forException(new Exception("Validation exception"));
+                }
+            } catch(Exception ex) {
+                logger.LogError("Unable to create a new provider due: {0}", ex);
+                return Result.forException(ex);
+            }
+        }
+
         
     }
 }

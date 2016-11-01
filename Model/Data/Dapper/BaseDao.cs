@@ -5,11 +5,15 @@ using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Logging;
 using BalanceApi.Domain;
 using Microsoft.Extensions.Options;
+using Dapper;
+using System.Linq;
 
 namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {
+        protected static string LAST_INSERT_ID = "select LAST_INSERT_ID()";
+
         protected AppSettings Settings { get; }
 
         protected ILogger Logger; 
@@ -30,6 +34,15 @@ namespace BalanceApi.Model.Data.Dapper
             {
                 throw ex;
             } 
+        }
+
+        protected long GetLasInsertedId() {
+            try {
+                Logger.LogInformation("Getting last inserted Id");
+                return getConnection().Query<long>(LAST_INSERT_ID).Single();
+            } catch(Exception ex) {
+                throw ex;
+            }
         }
     }
 }

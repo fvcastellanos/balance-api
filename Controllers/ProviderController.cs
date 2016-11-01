@@ -54,5 +54,20 @@ namespace BalanceApi.Controllers {
                 return ForException(result.getException());
             }
         }
+
+        [HttpPost]
+        public IActionResult New([FromBody] Provider provider) {
+            Result result = Service.New(provider);
+            if(result.isSuccess()) {
+                Provider p = result.getObject<Provider>();
+                if(p != null ) {
+                    return Created("New provider", p);
+                } else {
+                    return BadRequest();
+                }
+            } else {
+                return ForException(result.getException());
+            }
+        }
     }
 }

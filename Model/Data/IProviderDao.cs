@@ -8,5 +8,7 @@ namespace BalanceApi.Model.Data
         List<Provider> GetAll();
         Provider GetById(long id);
         List<Provider> GetByCountry(string country);
+        Provider FindProvider(string name, string country);
+        long New(string name, string country);
     }
 }
