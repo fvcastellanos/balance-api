@@ -38,6 +38,9 @@ namespace BalanceApi
             services.AddOptions();
             services.AddMvc();
 
+            // Security services
+            services.AddCors();
+
             services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
 
             // Data Repositories

@@ -10,9 +10,9 @@ namespace BalanceApi.Controllers
     {
 
         protected IActionResult ForException(Exception ex) {
-            return internalServerError(ex.Message);
+            return InternalServerError(ex.Message);
         }
-        protected IActionResult internalServerError(object payload) {
+        protected IActionResult InternalServerError(object payload) {
             return StatusCode((int)HttpStatusCode.InternalServerError, payload);
         }
 

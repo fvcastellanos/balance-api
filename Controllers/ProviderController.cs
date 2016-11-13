@@ -1,8 +1,8 @@
 
+using System;
 using Microsoft.AspNetCore.Mvc;
 using BalanceApi.Services;
 using Microsoft.Extensions.Logging;
-using BalanceApi.Domain;
 using BalanceApi.Model.Domain;
 using System.Collections.Generic;
 
@@ -21,53 +21,58 @@ namespace BalanceApi.Controllers {
 
         [HttpGet]
         public IActionResult GetAll() {
-            Result result = Service.GetAll();
+            Result<Exception, List<Provider>> result = Service.GetAll();
             if(result.isSuccess()) {
-                return Ok(result.getObject<List<Provider>>());
+                return Ok(result.GetPayload());
             } else {
-                logger.LogError("Unable to get the providers due: {0}", result.getException());
-                return ForException(result.getException());
+                logger.LogError("Unable to get the providers due: {0}", result.GetFailure());
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id) {
-            Result result = Service.GetById(id);
+            Result<Exception, Provider> result = Service.GetById(id);
             if(result.isSuccess()) {
-                Provider provider = result.getObject<Provider>();
+                Provider provider = result.GetPayload();
                 if(provider != null) {
                     return Ok(provider);
                 } else {
                     return NotFound();
                 }
             } else {
-                return ForException(result.getException());
+                return ForException(result.GetFailure());
             }
         }
 
-        [HttpGet("/country/{country}")]
+        [HttpGet("country/{country}")]
         public IActionResult GetByCountry(string country) {
-            Result result = Service.GetByCountry(country);
+            Result<Exception, List<Provider>> result = Service.GetByCountry(country);
             if(result.isSuccess()) {
-                return Ok(result.getObject<List<Provider>>());
+                return Ok(result.GetPayload());
             } else {
-                return ForException(result.getException());
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpPost]
         public IActionResult New([FromBody] Provider provider) {
-            Result result = Service.New(provider);
+            Result<Exception, Provider> result = Service.New(provider);
             if(result.isSuccess()) {
-                Provider p = result.getObject<Provider>();
+                Provider p = result.GetPayload();
                 if(p != null ) {
                     return Created("New provider", p);
                 } else {
                     return BadRequest();
                 }
             } else {
-                return ForException(result.getException());
+                return ForException(result.GetFailure());
             }
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] Provider provider) {
+            return Ok();
         }
     }
 }

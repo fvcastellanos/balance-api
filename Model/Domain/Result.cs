@@ -1,44 +1,64 @@
 
-using System;
 
-namespace BalanceApi.Domain
+namespace BalanceApi.Model.Domain
 {
-    public class Result 
+    public class Result<L, R>
     {
-        private object obj;
+        private R payload;
 
-        private Exception ex;
+        private L failure;
 
         private bool success;
 
-        private Result(object obj) {
-            this.obj = obj;
-            success = true; 
+        // private Result(R payload, bool success) {
+        //     this.payload = payload;
+        //     this.success = success;
+        // }
+
+        private Result(R payload) {
+            this.payload = payload;
+            this.success = true;
         }
 
-        private Result(Exception ex) {
-            this.ex = ex;
-            success = false;
+        private Result(L failure) {
+            this.failure = failure;
+            this.success = false;
         }
 
-        public T getObject<T>() {
-            return (T) obj;
+        // public R GetPayload() {
+        //     return payload;
+        // }
+
+        // public R GetFailure() {
+        //     return GetPayload();
+        // }
+
+        public R GetPayload() {
+            return payload;
         }
 
-        public Exception getException() {
-            return ex;
+        public L GetFailure() {
+            return failure;
         }
 
         public bool isSuccess() {
             return success;
         }
 
-        public static Result forSuccess(object obj) {
-            return new Result(obj);
+        // public static Result<T> forSuccess<T>(T obj) {
+        //     return new Result<T>(obj, true);
+        // }
+
+        // public static Result<L> forFailure<L>(L obj) {
+        //     return new Result<L>(obj, false);
+        // }
+
+        public static Result<L, R> ForSuccess(R obj) {
+            return new Result<L, R>(obj);
         }
 
-        public static Result forException(Exception ex) {
-            return new Result(ex);
+        public static Result<L, R> ForFailure(L ex) {
+            return new Result<L, R>(ex);
         }
 
     }
