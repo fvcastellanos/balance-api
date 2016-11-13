@@ -19,6 +19,7 @@ namespace BalanceApi.Model.Data.Dapper {
         private static string GET_BY_ID = "select * from provider where id = @Id";
         private static string FIND_PROVIDER = "select * from provider where name = @Name and country = @Country";
         private static string NEW = "insert into provider (name, country) values (@Name, @Country)";
+        private static string DELETE = "delete from provider where id = @Id";
 
         public ProviderDao(IOptions<AppSettings> settings,  ILogger<ProviderDao> logger) : base(settings, logger)
         {
@@ -74,6 +75,24 @@ namespace BalanceApi.Model.Data.Dapper {
             }
         }
 
-        
+        public int Delete(long id) {
+            try {
+                int rows = getConnection().Execute(DELETE, new { Id = id });
+                return rows;
+            } catch(Exception ex) {
+                throw ex;
+            }
+        }
+
+        public Provider Update(Provider provider) {
+            try {
+                getConnection().Execute("update provider set name = @Name, country = @Country where id = @Id", 
+                    new { Name = provider.name, Country = provider.country, Id = provider.id });
+                return GetById(provider.id);
+            } catch(Exception ex) {
+                throw ex;
+            }
+
+        }
     }
 }

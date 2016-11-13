@@ -5,6 +5,7 @@ using BalanceApi.Services;
 using Microsoft.Extensions.Logging;
 using BalanceApi.Model.Domain;
 using System.Collections.Generic;
+using BalanceApi.Validators;
 
 namespace BalanceApi.Controllers {
 
@@ -14,9 +15,13 @@ namespace BalanceApi.Controllers {
         private ILogger logger;
         private ProviderService Service;
 
-        public ProviderController(ILogger<ProviderController> logger, ProviderService Service) {
+        private IModelValidator<Provider> validator;
+
+        public ProviderController(ILogger<ProviderController> logger, ProviderService Service, 
+            IModelValidator<Provider> validator) {
             this.Service = Service;
             this.logger = logger;
+            this.validator = validator;
         }
 
         [HttpGet]
@@ -72,6 +77,35 @@ namespace BalanceApi.Controllers {
 
         [HttpPut]
         public IActionResult Update([FromBody] Provider provider) {
+            Result<List<string>, Provider> validation = validator.validate(provider);
+            if(validation.isSuccess()) {
+                Result<Exception, Provider> r = Service.Update(validation.GetPayload());
+                if(r.isSuccess()) {
+                    Provider p = r.GetPayload();
+                    if(r != null) {
+                        return Created("Update Provider", p);
+                    } else {
+                        return NotFound();
+                    }
+                } else {
+                    return ForException(r.GetFailure());
+                }
+            } else {
+                return BadRequest(validation.GetFailure());
+            }
+        }
+
+        [HttpDelete("{id")]
+        public IActionResult Delete(long id) {
+            Result<Exception, int> result = Service.Delete(id);
+            if(result.isSuccess()) {
+                int rows = result.GetPayload();
+                if(rows > 0) {
+                    return Accepted(rows);
+                } else {
+                    return NotFound();
+                }
+            }
             return Ok();
         }
     }

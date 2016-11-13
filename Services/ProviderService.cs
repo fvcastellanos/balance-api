@@ -76,6 +76,26 @@ namespace BalanceApi.Services
             }
         }
 
-        
+        public Result<Exception, int> Delete(long id) {
+            try {
+                logger.LogInformation("Deleting provider with id {0}", id);
+                int rows = providerDao.Delete(id);
+                logger.LogInformation("Provider with id {0} deleted", id);
+                return Result<Exception, int>.ForSuccess(rows);
+            } catch(Exception ex) {
+                return Result<Exception, int>.ForFailure(ex);
+            }
+        }
+
+        public Result<Exception, Provider> Update(Provider provider) {
+            try {
+                logger.LogInformation("Trying to update provider with id: {0}", provider.id);
+                Provider p = providerDao.Update(provider);
+                logger.LogInformation("Provider udpated");
+                return Result<Exception, Provider>.ForSuccess(p);
+            } catch(Exception ex) {
+                return Result<Exception, Provider>.ForFailure(ex);
+            }
+        }
     }
 }

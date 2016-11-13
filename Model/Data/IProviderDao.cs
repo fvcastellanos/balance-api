@@ -10,5 +10,7 @@ namespace BalanceApi.Model.Data
         List<Provider> GetByCountry(string country);
         Provider FindProvider(string name, string country);
         long New(string name, string country);
+        int Delete(long id);
+        Provider Update(Provider provider);
     }
 }
