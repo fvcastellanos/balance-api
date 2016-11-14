@@ -5,11 +5,15 @@ using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Logging;
 using BalanceApi.Domain;
 using Microsoft.Extensions.Options;
+using Dapper;
+using System.Linq;
 
 namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {
+        protected static string LAST_INSERT_ID = "select LAST_INSERT_ID()";
+
         protected AppSettings Settings { get; }
 
         protected ILogger Logger; 
@@ -25,14 +29,20 @@ namespace BalanceApi.Model.Data.Dapper
             {
                 Logger.LogInformation("Getting DB connection");
                 return new MySqlConnection(Settings.ConnectionString);
-                // return new MySqlConnection("Server=localhost;Database=account_balance;Uid=root;Pwd=r00t;");
-                
             }
             catch (Exception ex)
             {
-                Logger.LogError("Unable to create db connection", ex);
                 throw ex;
             } 
+        }
+
+        protected long GetLasInsertedId() {
+            try {
+                Logger.LogInformation("Getting last inserted Id");
+                return getConnection().Query<long>(LAST_INSERT_ID).Single();
+            } catch(Exception ex) {
+                throw ex;
+            }
         }
     }
 }
