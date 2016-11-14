@@ -10,6 +10,8 @@ using BalanceApi.Model.Data.Dapper;
 using BalanceApi.Domain;
 
 using System.IO;
+using BalanceApi.Validators;
+using BalanceApi.Model.Domain;
 
 namespace BalanceApi
 {
@@ -50,6 +52,8 @@ namespace BalanceApi
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
+
+            services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

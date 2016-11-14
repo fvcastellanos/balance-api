@@ -95,7 +95,7 @@ namespace BalanceApi.Controllers {
             }
         }
 
-        [HttpDelete("{id")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(long id) {
             Result<Exception, int> result = Service.Delete(id);
             if(result.isSuccess()) {
