@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
 using BalanceApi.Services;
-using BalanceApi.Domain;
 using BalanceApi.Model.Domain;
+using System;
 
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,66 +26,66 @@ namespace BalanceApi.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            Result result = service.GetAccountTypes();
+            Result<Exception, List<AccountType>> result = service.GetAccountTypes();
             if(result.isSuccess()) {
-                return Ok(result.getObject<List<AccountType>>());
+                return Ok(result.GetPayload());
             } else {
-                return internalServerError(result.getException());
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id) {
-            Result result = service.GetAccountTypeById(id);
+            Result<Exception, AccountType> result = service.GetAccountTypeById(id);
             if(result.isSuccess()) {
-                AccountType accountType = result.getObject<AccountType>();
+                AccountType accountType = result.GetPayload();
                 if(accountType != null) {
                     return Ok(accountType);
                 } else {
                     return NotFound();
                 }
             } else {
-                return internalServerError(result.getException());
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpPost]
         public IActionResult New( [FromBody] AccountType accountType) {
-            Result result = service.newAccountType(accountType);
+            Result<Exception, AccountType> result = service.newAccountType(accountType);
             if(result.isSuccess()) {
-                AccountType item = result.getObject<AccountType>();
+                AccountType item = result.GetPayload();
                 if(item != null) {
                     return Created("New", item);
                 } else {
                     return BadRequest();
                 }
             } else {
-                return internalServerError(result.getException().Message);
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] AccountType accountType) {
-            Result result = service.updateAccountType(accountType);
+            Result<Exception, AccountType> result = service.updateAccountType(accountType);
             if(result.isSuccess()) {
-                return Ok(result.getObject<AccountType>());
+                return Ok(result.GetPayload());
             } else {
-                return internalServerError(result.getException().Message);
+                return ForException(result.GetFailure());
             }
         }
 
         [HttpDeleteAttribute("{id}")]
         public IActionResult Delete(long id) {
-            Result result = service.deleteAccountType(id);
+            Result<Exception, int> result = service.deleteAccountType(id);
             if(result.isSuccess()) {
-                int rows = result.getObject<int>();
+                int rows = result.GetPayload();
                 if(rows > 0) {
                     return Accepted(rows);
                 } else {
                     return NotFound();
                 }
             } else {
-                return internalServerError(result.getException().Message);
+                return ForException(result.GetFailure());
             }
         }
     }
