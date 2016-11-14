@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using BalanceApi.Domain;
 using Microsoft.Extensions.Logging;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;

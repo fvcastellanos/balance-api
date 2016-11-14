@@ -53,6 +53,7 @@ namespace BalanceApi
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
 
+            // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
         }
 

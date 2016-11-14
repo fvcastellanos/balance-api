@@ -10,11 +10,6 @@ namespace BalanceApi.Model.Domain
 
         private bool success;
 
-        // private Result(R payload, bool success) {
-        //     this.payload = payload;
-        //     this.success = success;
-        // }
-
         private Result(R payload) {
             this.payload = payload;
             this.success = true;
@@ -24,14 +19,6 @@ namespace BalanceApi.Model.Domain
             this.failure = failure;
             this.success = false;
         }
-
-        // public R GetPayload() {
-        //     return payload;
-        // }
-
-        // public R GetFailure() {
-        //     return GetPayload();
-        // }
 
         public R GetPayload() {
             return payload;
@@ -44,14 +31,6 @@ namespace BalanceApi.Model.Domain
         public bool isSuccess() {
             return success;
         }
-
-        // public static Result<T> forSuccess<T>(T obj) {
-        //     return new Result<T>(obj, true);
-        // }
-
-        // public static Result<L> forFailure<L>(L obj) {
-        //     return new Result<L>(obj, false);
-        // }
 
         public static Result<L, R> ForSuccess(R obj) {
             return new Result<L, R>(obj);
