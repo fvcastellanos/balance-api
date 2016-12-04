@@ -57,6 +57,7 @@ namespace BalanceApi
 
             // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
+            services.AddSingleton<IModelValidator<TransactionType>, TransactionTypeValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

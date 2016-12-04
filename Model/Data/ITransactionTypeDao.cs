@@ -7,5 +7,7 @@ namespace BalanceApi.Model.Data
     public interface ITransactionTypeDao
     {
         List<TransactionType> GetAll();
+        TransactionType GetById(long id);
+        long New(TransactionType transactionType);
     }
 }
