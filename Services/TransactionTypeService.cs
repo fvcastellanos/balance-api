@@ -68,5 +68,41 @@ namespace BalanceApi.Services
             }
         }
 
+        public Result<Exception, TransactionType> Update(TransactionType transactionType) {
+            try
+            {
+                _logger.LogInformation("Updating transaction type: {0}", transactionType.name);
+                var transactionTypeOld = _transactionTypeDao.GetById(transactionType.id);
+                if(transactionTypeOld == null)
+                {
+                    return Result<Exception, TransactionType>.ForFailure(new Exception("Transaction Type not found"));
+                }
+
+                var updated = _transactionTypeDao.Update(transactionType);
+
+                return Result<Exception, TransactionType>.ForSuccess(updated);
+            }
+            catch(Exception ex)
+            {
+                return Result<Exception, TransactionType>.ForFailure(ex);
+            }
+        }
+
+        public Result<Exception, int> Delete(long id)
+        {
+            try
+            {
+                _logger.LogInformation("Deleting Transaction Type with id: {0}", id);
+                var rows = _transactionTypeDao.Delete(id);
+                _logger.LogInformation("Transaction Type with Id: {0} was deleted", id);
+                return Result<Exception, int>.ForSuccess(rows);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unable to delete Transaction type with id: {0} -> {1}", id, ex);
+                return Result<Exception, int>.ForFailure(ex);
+            }
+        }
+
     }
 }

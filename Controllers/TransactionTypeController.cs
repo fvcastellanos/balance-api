@@ -83,5 +83,47 @@ namespace BalanceApi.Controllers
                 return BadRequest(obj.GetFailure());
             }
         }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] TransactionType transactionType) 
+        {
+            var obj = _validator.validate(transactionType);
+            if(obj.isSuccess())
+            {
+                var result = TransactionTypeService.Update(obj.GetPayload());
+                if (result.isSuccess())
+                {
+                    return Created("UpdateTransactionType", result.GetPayload());
+                }
+                else 
+                {
+                    return ForException(result.GetFailure());
+                }
+            }
+
+            return BadRequest(obj.GetFailure());
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(long id)
+        {
+            var result = TransactionTypeService.Delete(id);
+            if(result.isSuccess())
+            {
+                var rows = result.GetPayload();
+                if (rows > 0)
+                {
+                    return Accepted(rows);
+                } 
+                else 
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return ForException(result.GetFailure());
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace BalanceApi.Model.Domain
     {
         public long id { get; set; }
         public string name { get; set; }
-        public bool IsCredit { get; set; } 
+        public bool credit { get; set; } 
         
     }
 }

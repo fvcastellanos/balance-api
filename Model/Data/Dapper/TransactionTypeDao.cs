@@ -35,7 +35,8 @@ namespace BalanceApi.Model.Data.Dapper
         {
             try 
             {
-                return getConnection().Query<TransactionType>("select * from transaction_type where id = @Id", new {Id = id }).SingleOrDefault();
+                return getConnection().Query<TransactionType>("select * from transaction_type where id = @Id", 
+                    new { Id = id }).SingleOrDefault();
             }
             catch(Exception ex)
             {
@@ -48,9 +49,9 @@ namespace BalanceApi.Model.Data.Dapper
             try 
             {
                 long id = 0;
-                logger.LogInformation("Adding a new transaction type with name: {0} and type: {1}", transactionType.name, transactionType.IsCredit);
+                logger.LogInformation("Adding a new transaction type with name: {0} and type: {1}", transactionType.name, transactionType.credit);
                 var rows = getConnection().Execute("insert into transaction_type (name, credit) values (@Name, @Credit)", 
-                    new {Name = transactionType.name, Credit = transactionType.IsCredit});
+                    new { Name = transactionType.name, Credit = transactionType.credit });
                 
                 if(rows > 0) 
                 {
@@ -58,6 +59,36 @@ namespace BalanceApi.Model.Data.Dapper
                 }
 
                 return id;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public TransactionType Update(TransactionType transactionType)
+        {
+            try 
+            {
+                getConnection().Execute("update transaction_type set name = @Name, credit = @Credit where id = @Id", 
+                    new { Name = transactionType.name, Credit = transactionType.credit, Id = transactionType.id });
+                
+                return GetById(transactionType.id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int Delete(long id)
+        {
+            try
+            {
+                int rows = getConnection().Execute("delete from transaction_type where id = @Id",
+                    new { Id = id });
+
+                return rows;
             }
             catch(Exception ex)
             {
