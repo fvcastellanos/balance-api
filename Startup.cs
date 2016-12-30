@@ -35,26 +35,29 @@ namespace BalanceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Security services
+            services.AddCors();
+
             // Add framework services.
             services.AddLogging();
             services.AddOptions();
             services.AddMvc();
-
-            // Security services
-            services.AddCors();
 
             services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
 
             // Data Repositories
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
             services.AddSingleton<IProviderDao, ProviderDao>();
+            services.AddSingleton<ITransactionTypeDao, TransactionTypeDao>();
 
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
+            services.AddSingleton<TransactionTypeService, TransactionTypeService>();
 
             // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
+            services.AddSingleton<IModelValidator<TransactionType>, TransactionTypeValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

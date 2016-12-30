@@ -106,7 +106,10 @@ namespace BalanceApi.Controllers {
                     return NotFound();
                 }
             }
-            return Ok();
+            else
+            {
+                return ForException(result.GetFailure());
+            }
         }
     }
 }
