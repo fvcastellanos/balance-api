@@ -4,29 +4,26 @@
     "debugType": "portable",
     "emitEntryPoint": true
   },
-  "dependencies": {},
+  "dependencies": {
+      "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+      "Microsoft.AspNetCore.Mvc": "1.1.0",
+      "Microsoft.Extensions.Logging": "1.1.0",
+      "Microsoft.Extensions.Logging.Console": "1.1.0",
+      "Microsoft.Extensions.Logging.Debug": "1.0.1",
+      "Microsoft.Extensions.Configuration.Binder": "1.1.0",
+      "MySql.Data.Core": "7.0.4-ir-191",
+      "Dapper": "1.50.2"
+    
+  },
+
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0"
-        },
-
-        "Microsoft.AspNetCore.Server.Kestrel" : "1.1.0",
-        "Microsoft.AspNetCore.Mvc": "1.0.2",
-        "Microsoft.Extensions.Logging" : "1.1.0",
-        "Microsoft.Extensions.Logging.Console": "1.0.1",
-        "Microsoft.Extensions.Logging.Debug": "1.1.0",
-        "Microsoft.Extensions.Configuration.Binder" : "1.0.1",
-        "MySql.Data.Core": "7.0.4-ir-191",
-        "Dapper" : "1.50.2"
-        
-      },
-      "imports": "dnxcore50"
+          "version": "1.1.0"
+        }
+      }
     }
-  },
-  "runtimes": {
-    "dnxcore50": "1.0.0"
   }
 }
