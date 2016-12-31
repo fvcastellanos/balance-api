@@ -1,35 +1,40 @@
-using System.Collections.Generic;
 using BalanceApi.Model.Domain;
-
 
 namespace BalanceApi.Validators {
 
     public class ProviderValidator : IModelValidator<Provider>
     {
-        private List<string> errors;
+        private readonly ValidationResult _result;
 
-        public ProviderValidator() {
-            errors = new List<string>();
+        public ProviderValidator()
+        {
+            _result = new ValidationResult();
         }
 
-        public Result<List<string>, Provider> validate(Provider obj)
+        public ValidationResult Validate(Provider obj)
         {
-            if(obj == null) {
-                errors.Add("Provider is null");
-                return Result<List<string>, Provider>.ForFailure(errors);
-            } else {
-                if(string.IsNullOrEmpty(obj.name)) {
-                    errors.Add("Must provide a name");
-                }
-
-                if(string.IsNullOrEmpty(obj.country)) {
-                    errors.Add("A country must be defined");
-                }
-
-                // validate country code according with ISO (2 letter code)
+            if (obj == null)
+            {
+                _result.Add("Provider is null");
+                return _result;
             }
 
-            return Result<List<string>, Provider>.ForSuccess(obj);
+            if (string.IsNullOrEmpty(obj.Name))
+            {
+                _result.Add("Must provide a name");
+            }
+
+            if (string.IsNullOrEmpty(obj.Country))
+            {
+                _result.Add("A country must be defined");
+            }
+
+            if (obj.Country.Length != 2)
+            {
+                _result.Add("Country code is not following the ISO standard");
+            }
+
+            return _result;
         }
 
     }

@@ -27,7 +27,7 @@ namespace BalanceApi.Controllers
         public IActionResult GetAll()
         {
             Result<Exception, List<AccountType>> result = service.GetAccountTypes();
-            if(result.isSuccess()) {
+            if(result.IsSuccess()) {
                 return Ok(result.GetPayload());
             } else {
                 return ForException(result.GetFailure());
@@ -37,7 +37,7 @@ namespace BalanceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(long id) {
             Result<Exception, AccountType> result = service.GetAccountTypeById(id);
-            if(result.isSuccess()) {
+            if(result.IsSuccess()) {
                 AccountType accountType = result.GetPayload();
                 if(accountType != null) {
                     return Ok(accountType);
@@ -51,8 +51,8 @@ namespace BalanceApi.Controllers
 
         [HttpPost]
         public IActionResult New( [FromBody] AccountType accountType) {
-            Result<Exception, AccountType> result = service.newAccountType(accountType);
-            if(result.isSuccess()) {
+            Result<Exception, AccountType> result = service.NewAccountType(accountType);
+            if(result.IsSuccess()) {
                 AccountType item = result.GetPayload();
                 if(item != null) {
                     return Created("New", item);
@@ -66,8 +66,8 @@ namespace BalanceApi.Controllers
 
         [HttpPut]
         public IActionResult Update([FromBody] AccountType accountType) {
-            Result<Exception, AccountType> result = service.updateAccountType(accountType);
-            if(result.isSuccess()) {
+            Result<Exception, AccountType> result = service.UpdateAccountType(accountType);
+            if(result.IsSuccess()) {
                 return Ok(result.GetPayload());
             } else {
                 return ForException(result.GetFailure());
@@ -77,7 +77,7 @@ namespace BalanceApi.Controllers
         [HttpDeleteAttribute("{id}")]
         public IActionResult Delete(long id) {
             Result<Exception, int> result = service.deleteAccountType(id);
-            if(result.isSuccess()) {
+            if(result.IsSuccess()) {
                 int rows = result.GetPayload();
                 if(rows > 0) {
                     return Accepted(rows);

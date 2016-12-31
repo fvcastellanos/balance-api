@@ -6,7 +6,7 @@ namespace BalanceApi.Validators {
 
     public interface IModelValidator<T> {
 
-        Result<List<string>, T> validate(T obj);
+        ValidationResult Validate(T obj);
 
     }
 }

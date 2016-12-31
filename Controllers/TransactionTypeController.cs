@@ -1,6 +1,4 @@
 
-using System;
-using System.Collections.Generic;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using BalanceApi.Validators;
@@ -12,118 +10,112 @@ namespace BalanceApi.Controllers
     [Route("/api/transaction-type")]
     public class TransactionTypeController : BaseController
     {
-        private ILogger Logger;
+        private readonly ILogger _logger;
 
-        private TransactionTypeService TransactionTypeService;
+        private readonly TransactionTypeService _transactionTypeService;
 
-        private IModelValidator<TransactionType> _validator;
+        private readonly IModelValidator<TransactionType> _validator;
 
-        public TransactionTypeController(ILogger<TransactionTypeController> Logger, TransactionTypeService TransactionTypeService, 
+        public TransactionTypeController(ILogger<TransactionTypeController> logger, TransactionTypeService transactionTypeService,
             IModelValidator<TransactionType> transactionTypeValidator)
         {
-            this.Logger = Logger;
-            this.TransactionTypeService = TransactionTypeService;
-            this._validator = transactionTypeValidator;
+            _logger = logger;
+            _transactionTypeService = transactionTypeService;
+            _validator = transactionTypeValidator;
         }
 
         [HttpGet]
         public IActionResult GetAll() {
-            Result<Exception, List<TransactionType>> result = TransactionTypeService.GetAll();
-            if(result.isSuccess())
+            var result = _transactionTypeService.GetAll();
+
+            if (result.IsSuccess())
             {
                 return Ok(result.GetPayload());
             }
-            else {
-                Logger.LogError("Unable to get the providers because: {0}", result.GetFailure());
-                return ForException(result.GetFailure());
-            }
+
+            _logger.LogError("Unable to get the providers because: {0}", result.GetFailure());
+            return ForException(result.GetFailure());
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id) 
         {
-            Result<Exception, TransactionType> result = TransactionTypeService.GetById(id);
-            if(result.isSuccess()) 
+            var result = _transactionTypeService.GetById(id);
+
+            if (result.IsSuccess())
             {
                 var value = result.GetPayload();
-                if(value != null) 
+                if (value != null)
                 {
                     return Ok(result.GetPayload());
                 }
-                else 
-                {
-                    return NotFound();
-                }
+
+                return NotFound();
             }
-            else
-            {
-                Logger.LogError("Unable to get the transaction type with id: {0}", id);
-                return ForException(result.GetFailure());
-            }
+
+            _logger.LogError("Unable to get the transaction type with id: {0}", id);
+            return ForException(result.GetFailure());
         }
 
         [HttpPost]
         public IActionResult New([FromBody] TransactionType transactionType)
         {
-            var obj = _validator.validate(transactionType);
-            if(obj.isSuccess())
+            var validation = _validator.Validate(transactionType);
+
+            if (validation.HasFailed())
             {
-                var result = TransactionTypeService.New(transactionType);
-                if(result.isSuccess())
-                {
-                    return Created("NewTransactionType", result.GetPayload());
-                }
-                else 
-                {
-                    return ForException(result.GetFailure());
-                }
+                return BadRequest(validation.GetErrors());
             }
-            else 
+
+            var result = _transactionTypeService.New(transactionType);
+
+            if (result.IsSuccess())
             {
-                return BadRequest(obj.GetFailure());
+                return Created("NewTransactionType", result.GetPayload());
             }
+
+            return ForException(result.GetFailure());
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] TransactionType transactionType) 
         {
-            var obj = _validator.validate(transactionType);
-            if(obj.isSuccess())
+            var validation = _validator.Validate(transactionType);
+
+            if (validation.HasFailed())
             {
-                var result = TransactionTypeService.Update(obj.GetPayload());
-                if (result.isSuccess())
-                {
-                    return Created("UpdateTransactionType", result.GetPayload());
-                }
-                else 
-                {
-                    return ForException(result.GetFailure());
-                }
+                return BadRequest(validation.GetErrors());
             }
 
-            return BadRequest(obj.GetFailure());
+            var result = _transactionTypeService.Update(transactionType);
+
+            if (result.IsSuccess())
+            {
+                return Created("UpdateTransactionType", result.GetPayload());
+            }
+
+            return ForException(result.GetFailure());
+
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
-            var result = TransactionTypeService.Delete(id);
-            if(result.isSuccess())
+            var result = _transactionTypeService.Delete(id);
+
+            if (result.IsSuccess())
             {
                 var rows = result.GetPayload();
+
                 if (rows > 0)
                 {
                     return Accepted(rows);
-                } 
-                else 
-                {
-                    return NotFound();
                 }
+
+                return NotFound();
             }
-            else
-            {
-                return ForException(result.GetFailure());
-            }
+
+            return ForException(result.GetFailure());
         }
     }
 }

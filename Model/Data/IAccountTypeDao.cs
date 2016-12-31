@@ -6,11 +6,11 @@ namespace BalanceApi.Model.Data
 {
     public interface IAccountTypeDao
     {
-        List<AccountType> findAll();
-        AccountType findById(long id);
-        AccountType findByName(string name);
-        long addNew(string name);
-        int delete(long id);
-        AccountType update(AccountType accountType);
+        List<AccountType> FindAll();
+        AccountType FindById(long id);
+        AccountType FindByName(string name);
+        long AddNew(string name);
+        int Delete(long id);
+        AccountType Update(AccountType accountType);
     }
 }

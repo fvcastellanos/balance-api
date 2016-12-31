@@ -1,99 +1,65 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BalanceApi.Domain;
 using BalanceApi.Model.Domain;
+using Dapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Dapper;
-using System.Linq;
 
 namespace BalanceApi.Model.Data.Dapper
 {
     public class TransactionTypeDao : BaseDao, ITransactionTypeDao
     {
-        private ILogger<TransactionTypeDao> logger;
-        public TransactionTypeDao(IOptions<AppSettings> appSettings, ILogger<TransactionTypeDao> Logger) : base(appSettings, Logger)
+        private readonly ILogger<TransactionTypeDao> _logger;
+        public TransactionTypeDao(IOptions<AppSettings> appSettings, ILogger<TransactionTypeDao> logger) : base(appSettings, logger)
         {
-            this.logger = Logger;
+            _logger = logger;
         }
 
         public List<TransactionType> GetAll()
         {
-            try
-            {
-                logger.LogInformation("Getting the transactions types from DB");
-                return getConnection().Query<TransactionType>("select * from transaction_type").AsList();
-            }
-            catch(Exception ex) 
-            {
-                throw ex;
-            }
+            _logger.LogInformation("Getting the transactions types from DB");
+            return GetConnection().Query<TransactionType>("select * from transaction_type").AsList();
         }
 
         public TransactionType GetById(long id)
         {
-            try 
-            {
-                return getConnection().Query<TransactionType>("select * from transaction_type where id = @Id", 
-                    new { Id = id }).SingleOrDefault();
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
+            return GetConnection().Query<TransactionType>("select * from transaction_type where id = @Id",
+                new { Id = id }).SingleOrDefault();
         }
 
         public long New(TransactionType transactionType)
         {
-            try 
-            {
-                long id = 0;
-                logger.LogInformation("Adding a new transaction type with name: {0} and type: {1}", transactionType.name, transactionType.credit);
-                var rows = getConnection().Execute("insert into transaction_type (name, credit) values (@Name, @Credit)", 
-                    new { Name = transactionType.name, Credit = transactionType.credit });
-                
-                if(rows > 0) 
-                {
-                    id = GetLasInsertedId();
-                }
+            long id = 0;
+            _logger.LogInformation("Adding a new transaction type with name: {0} and type: {1}", transactionType.Name, transactionType.Credit);
 
-                return id;
-            }
-            catch(Exception ex)
+            var rows = GetConnection().Execute("insert into transaction_type (name, credit) values (@Name, @Credit)",
+                new {transactionType.Name, transactionType.Credit });
+                
+            if(rows > 0)
             {
-                throw ex;
+                id = GetLasInsertedId();
             }
+
+            return id;
         }
 
         public TransactionType Update(TransactionType transactionType)
         {
-            try 
-            {
-                getConnection().Execute("update transaction_type set name = @Name, credit = @Credit where id = @Id", 
-                    new { Name = transactionType.name, Credit = transactionType.credit, Id = transactionType.id });
+            GetConnection().Execute("update transaction_type set name = @Name, credit = @Credit where id = @Id",
+                new {transactionType.Name, transactionType.Credit, transactionType.Id });
                 
-                return GetById(transactionType.id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return GetById(transactionType.Id);
         }
 
         public int Delete(long id)
         {
-            try
-            {
-                int rows = getConnection().Execute("delete from transaction_type where id = @Id",
-                    new { Id = id });
+            var rows = GetConnection().Execute("delete from transaction_type where id = @Id",
+                new { Id = id });
 
-                return rows;
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
+            return rows;
         }
     }
 }

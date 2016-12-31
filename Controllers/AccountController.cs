@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-
-using BalanceApi.Model.Domain;
 using BalanceApi.Model.Data;
+using BalanceApi.Model.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BalanceApi.Controllers
@@ -10,26 +9,26 @@ namespace BalanceApi.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        private IAccountTypeDao accountTypeDao;
-        private ILogger<AccountController> logger;
+        private readonly IAccountTypeDao _accountTypeDao;
+        private ILogger<AccountController> _logger;
 
         public AccountController(IAccountTypeDao accountTypeDao,
             ILogger<AccountController> logger)
         {
-            this.logger = logger;
-            this.accountTypeDao = accountTypeDao;
+            _logger = logger;
+            _accountTypeDao = accountTypeDao;
         }
 
         [HttpGet]
         public List<AccountType> Get()
         {
-            return accountTypeDao.findAll();
+            return _accountTypeDao.FindAll();
         }
 
         [HttpGet("{id}")]
         public AccountType GetById(long id)
         {
-            return accountTypeDao.findById(id);
+            return _accountTypeDao.FindById(id);
         }
 
     }

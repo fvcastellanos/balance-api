@@ -1,18 +1,18 @@
 
 using System;
-using BalanceApi.Domain;
-using BalanceApi.Model.Domain;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Dapper;
 using System.Collections.Generic;
 using System.Linq;
+using BalanceApi.Domain;
+using BalanceApi.Model.Domain;
+using Dapper;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace BalanceApi.Model.Data.Dapper {
 
     public class ProviderDao : BaseDao, IProviderDao
     {
-        private ILogger logger;
+        private readonly ILogger _logger;
 
         private static string GET_ALL = "select * from provider";
         private static string GET_BY_COUNTRY = "select * from provider where country = @Country";
@@ -23,76 +23,48 @@ namespace BalanceApi.Model.Data.Dapper {
 
         public ProviderDao(IOptions<AppSettings> settings,  ILogger<ProviderDao> logger) : base(settings, logger)
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public List<Provider> GetAll()
         {
-            try {
-                return getConnection().Query<Provider>(GET_ALL).AsList();
-            } catch(Exception ex) {
-                throw ex;
-            }
+            return GetConnection().Query<Provider>(GET_ALL).AsList();
         }
 
         public List<Provider> GetByCountry(string country)
         {
-            try {
-                return getConnection().Query<Provider>(GET_BY_COUNTRY, new { Country = country }).AsList();
-            } catch(Exception ex) {
-                throw ex;
-            }            
+            return GetConnection().Query<Provider>(GET_BY_COUNTRY, new { Country = country }).AsList();
         }
 
         public Provider GetById(long id)
         {
-            try {
-                return getConnection().Query<Provider>(GET_BY_ID, new { Id = id }).SingleOrDefault();
-            } catch(Exception ex) {
-                throw ex;
-            }
+            return GetConnection().Query<Provider>(GET_BY_ID, new { Id = id }).SingleOrDefault();
         }
 
-        public Provider FindProvider(string name, string country) {
-            try {
-                return getConnection().Query<Provider>(FIND_PROVIDER, new { Name = name, Country = country }).SingleOrDefault();
-            } catch(Exception ex) {
-                throw ex;
-            }
+        public Provider FindProvider(string name, string country)
+        {
+            return GetConnection().Query<Provider>(FIND_PROVIDER, new { Name = name, Country = country }).SingleOrDefault();
         }
 
         public long New(string name, string country) {
-            try {
-                long id = 0;
-                int rows = getConnection().Execute(NEW, new { Name = name, Country = country});
-                if(rows > 0) {
-                    id = GetLasInsertedId();
-                }
-
-                return id;
-            } catch(Exception ex) {
-                throw ex;
+            long id = 0;
+            var rows = GetConnection().Execute(NEW, new { Name = name, Country = country});
+            if(rows > 0) {
+                id = GetLasInsertedId();
             }
+
+            return id;
         }
 
         public int Delete(long id) {
-            try {
-                int rows = getConnection().Execute(DELETE, new { Id = id });
-                return rows;
-            } catch(Exception ex) {
-                throw ex;
-            }
+            var rows = GetConnection().Execute(DELETE, new { Id = id });
+            return rows;
         }
 
         public Provider Update(Provider provider) {
-            try {
-                getConnection().Execute("update provider set name = @Name, country = @Country where id = @Id", 
-                    new { Name = provider.name, Country = provider.country, Id = provider.id });
-                return GetById(provider.id);
-            } catch(Exception ex) {
-                throw ex;
-            }
-
+            GetConnection().Execute("update provider set name = @Name, country = @Country where id = @Id",
+                new {provider.Name, provider.Country, provider.Id });
+            return GetById(provider.Id);
         }
     }
 }
