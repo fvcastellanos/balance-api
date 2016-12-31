@@ -1,84 +1,100 @@
-﻿using System.Collections.Generic;
-
-using BalanceApi.Model.Domain;
+﻿using System;
+using System.Collections.Generic;
 using BalanceApi.Model.Data;
+using BalanceApi.Model.Domain;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace BalanceApi.Services
 {
     public class AccountTypeService
     {
-        private ILogger<AccountTypeService> logger;
-        private IAccountTypeDao accountTypeDao;
+        private readonly ILogger<AccountTypeService> _logger;
+        private readonly IAccountTypeDao _accountTypeDao;
 
         public AccountTypeService(ILogger<AccountTypeService> logger, 
             IAccountTypeDao accountTypeDao)
         {
-            this.accountTypeDao = accountTypeDao;
-            this.logger = logger;
+            _accountTypeDao = accountTypeDao;
+            _logger = logger;
         }
 
         public Result<Exception, List<AccountType>> GetAccountTypes()
         {
-            try {
-                logger.LogInformation("Getting all the account types");
-                List<AccountType> list = accountTypeDao.findAll();
+            try
+            {
+                _logger.LogInformation("Getting all the account types");
+                var list = _accountTypeDao.FindAll();
+
                 return Result<Exception, List<AccountType>>.ForSuccess(list);
             }
-            catch(Exception ex) {
-                logger.LogError("Unable to get the account types, {0}", ex);
+            catch(Exception ex)
+            {
+                _logger.LogError("Unable to get the account types, {0}", ex);
                 return Result<Exception, List<AccountType>>.ForFailure(ex);
             }
         }
 
-        public Result<Exception, AccountType> GetAccountTypeById(long id) {
-            try {
-                logger.LogInformation("Getting Account Type for id: {0}", id);
-                AccountType accountType = accountTypeDao.findById(id);
+        public Result<Exception, AccountType> GetAccountTypeById(long id)
+        {
+            try
+            {
+                _logger.LogInformation("Getting Account Type for id: {0}", id);
+                var accountType = _accountTypeDao.FindById(id);
+
                 return Result<Exception, AccountType>.ForSuccess(accountType);
-            } catch(Exception ex) {
-                logger.LogError("Unable to get the account type: {0}, due: {1}", id, ex);
+            } catch(Exception ex)
+            {
+                _logger.LogError("Unable to get the account type: {0}, due: {1}", id, ex);
                 return Result<Exception, AccountType>.ForFailure(ex);
             }
         }
 
-        public Result<Exception, AccountType> newAccountType(AccountType accountType) {
-            try {
-                if((accountType != null) && (accountType.name != null)) {
-                    long value = accountTypeDao.addNew(accountType.name);
-                    return Result<Exception, AccountType>.ForSuccess(new AccountType(value, accountType.name));
-                } else {
-                    return Result<Exception, AccountType>.ForFailure(new Exception("Can't create account type"));
+        public Result<Exception, AccountType> NewAccountType(AccountType accountType)
+        {
+            try
+            {
+                if (accountType?.Name != null)
+                {
+                    var value = _accountTypeDao.AddNew(accountType.Name);
+                    return Result<Exception, AccountType>.ForSuccess(new AccountType(value, accountType.Name));
                 }
-            } catch(Exception ex) {
-                logger.LogError("Unable to create a new account type due: {0}", ex);
+
+                return Result<Exception, AccountType>.ForFailure(new Exception("Can't create account type"));
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Unable to create a new account type due: {0}", ex);
                 return Result<Exception, AccountType>.ForFailure(ex);
             }
         }
 
-        public Result<Exception, int> deleteAccountType(long id) {
-            try {
-                logger.LogInformation("Trying to delete account type with id: {0}", id);
-                int rows = accountTypeDao.delete(id);
-                if(rows > 0) {
+        public Result<Exception, int> deleteAccountType(long id)
+        {
+            try
+            {
+                _logger.LogInformation("Trying to delete account type with id: {0}", id);
+                var rows = _accountTypeDao.Delete(id);
+
+                if (rows > 0)
+                {
                     return Result<Exception, int>.ForSuccess(rows);
-                } else {
-                    return Result<Exception, int>.ForFailure(new Exception("No account type with id: {0} was deleted"));
                 }
-            } catch(Exception ex) {
-                logger.LogError("Unable to delete account type with id: {0}, due: {1}", id, ex);
+
+                return Result<Exception, int>.ForFailure(new Exception("No account type with id: {0} was deleted"));
+            }
+            catch(Exception ex) {
+                _logger.LogError("Unable to delete account type with id: {0}, due: {1}", id, ex);
                 return Result<Exception, int>.ForFailure(ex);
             }
         }
 
-        public Result<Exception, AccountType> updateAccountType(AccountType accountType) {
+        public Result<Exception, AccountType> UpdateAccountType(AccountType accountType) {
             try {
-                logger.LogInformation("Updating account type: {0}", accountType);
-                AccountType at = accountTypeDao.update(accountType);
+                _logger.LogInformation("Updating account type: {0}", accountType);
+                AccountType at = _accountTypeDao.Update(accountType);
                 return Result<Exception, AccountType>.ForSuccess(at);
             } catch(Exception ex) {
-                logger.LogError("Unable to update account type with id: {0}, due: {1}", accountType, ex);
+                _logger.LogError("Unable to update account type with id: {0}, due: {1}", accountType, ex);
                 return Result<Exception, AccountType>.ForFailure(ex);
             }
             

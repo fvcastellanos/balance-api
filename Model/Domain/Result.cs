@@ -2,42 +2,42 @@
 
 namespace BalanceApi.Model.Domain
 {
-    public class Result<L, R>
+    public class Result<TL, TR>
     {
-        private R payload;
+        private readonly TR _payload;
 
-        private L failure;
+        private readonly TL _failure;
 
-        private bool success;
+        private readonly bool _success;
 
-        private Result(R payload) {
-            this.payload = payload;
-            this.success = true;
+        private Result(TR payload) {
+            _payload = payload;
+            _success = true;
         }
 
-        private Result(L failure) {
-            this.failure = failure;
-            this.success = false;
+        private Result(TL failure) {
+            _failure = failure;
+            _success = false;
         }
 
-        public R GetPayload() {
-            return payload;
+        public TR GetPayload() {
+            return _payload;
         }
 
-        public L GetFailure() {
-            return failure;
+        public TL GetFailure() {
+            return _failure;
         }
 
-        public bool isSuccess() {
-            return success;
+        public bool IsSuccess() {
+            return _success;
         }
 
-        public static Result<L, R> ForSuccess(R obj) {
-            return new Result<L, R>(obj);
+        public static Result<TL, TR> ForSuccess(TR obj) {
+            return new Result<TL, TR>(obj);
         }
 
-        public static Result<L, R> ForFailure(L ex) {
-            return new Result<L, R>(ex);
+        public static Result<TL, TR> ForFailure(TL ex) {
+            return new Result<TL, TR>(ex);
         }
 
     }

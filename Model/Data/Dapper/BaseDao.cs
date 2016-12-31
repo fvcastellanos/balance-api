@@ -1,48 +1,35 @@
-using System;
 using System.Data;
-using MySql.Data.MySqlClient;
-
-using Microsoft.Extensions.Logging;
-using BalanceApi.Domain;
-using Microsoft.Extensions.Options;
-using Dapper;
 using System.Linq;
+using BalanceApi.Domain;
+using Dapper;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
 
 namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {
-        protected static string LAST_INSERT_ID = "select LAST_INSERT_ID()";
+        protected static string LastInsertId = "select LAST_INSERT_ID()";
 
         protected AppSettings Settings { get; }
 
         protected ILogger Logger; 
-        protected BaseDao(IOptions<AppSettings> appSettings, ILogger Logger)
+        protected BaseDao(IOptions<AppSettings> appSettings, ILogger logger)
         {
-            this.Settings = appSettings.Value;
-            this.Logger = Logger;
+            Settings = appSettings.Value;
+            Logger = logger;
         }
         
-        protected IDbConnection getConnection() 
+        protected IDbConnection GetConnection()
         {
-            try
-            {
-                Logger.LogInformation("Getting DB connection");
-                return new MySqlConnection(Settings.ConnectionString);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            } 
+            Logger.LogInformation("Getting DB connection");
+            return new MySqlConnection(Settings.ConnectionString);
         }
 
         protected long GetLasInsertedId() {
-            try {
-                Logger.LogInformation("Getting last inserted Id");
-                return getConnection().Query<long>(LAST_INSERT_ID).Single();
-            } catch(Exception ex) {
-                throw ex;
-            }
+            Logger.LogInformation("Getting last inserted Id");
+            return GetConnection().Query<long>(LastInsertId).Single();
         }
     }
 }

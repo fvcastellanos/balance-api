@@ -19,12 +19,12 @@ namespace BalanceApi.Model.Data.Dapper
             this.logger = logger;
         }
 
-        public List<AccountType> findAll()
+        public List<AccountType> FindAll()
         {
             try
             {
                 logger.LogInformation("Getting account types");
-                return getConnection().Query<AccountType>("select id, name from account_type").AsList();
+                return GetConnection().Query<AccountType>("select id, name from account_type").AsList();
             }
             catch(Exception ex)
             {
@@ -33,12 +33,12 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public AccountType findById(long id)
+        public AccountType FindById(long id)
         {
             try
             {
                 logger.LogInformation("Getting account type with Id: {0}", id);
-                return getConnection().Query<AccountType>("select id, name from account_type " +
+                return GetConnection().Query<AccountType>("select id, name from account_type " +
                     " where id = @Id", new { Id = id }).SingleOrDefault<AccountType>();
             }
             catch(Exception ex)
@@ -48,12 +48,12 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public AccountType findByName(string name)
+        public AccountType FindByName(string name)
         {
             try
             {
                 logger.LogInformation("Getting account type with name: {0}", name);
-                return getConnection().Query<AccountType>("select id, name from account_type " +
+                return GetConnection().Query<AccountType>("select id, name from account_type " +
                     " where name = @Name", new { Name = name }).SingleOrDefault<AccountType>();
             }
             catch (Exception ex)
@@ -63,12 +63,12 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public long addNew(string name) {
+        public long AddNew(string name) {
             try {
                 long id = 0;
-                int rows = getConnection().Execute("insert into account_type (name) values (@Name)", new { Name = name });
+                int rows = GetConnection().Execute("insert into account_type (name) values (@Name)", new { Name = name });
                 if(rows > 0) {
-                    id = getConnection().Query<long>("select LAST_INSERT_ID()").Single();
+                    id = GetConnection().Query<long>("select LAST_INSERT_ID()").Single();
                 }
 
                 return id;
@@ -78,9 +78,9 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public int delete(long id) {
+        public int Delete(long id) {
             try {
-                int rows = getConnection().Execute("delete from account_type where id = @Id", new {Id = id});
+                int rows = GetConnection().Execute("delete from account_type where id = @Id", new {Id = id});
                 return rows;
             } catch(Exception ex) {
                 logger.LogError("Unable to delete account type with id: {0}", id);
@@ -88,12 +88,12 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public AccountType update(AccountType accountType) {
+        public AccountType Update(AccountType accountType) {
             try {
-                getConnection().Execute("update account_type set name = @Name where id = @Id", 
-                    new {Name = accountType.name, Id = accountType.id});
+                GetConnection().Execute("update account_type set name = @Name where id = @Id", 
+                    new {Name = accountType.Name, Id = accountType.Id});
 
-                return findById(accountType.id);
+                return FindById(accountType.Id);
             } catch(Exception ex) {
                 logger.LogError("Unable to update account type due: {0}", ex.Message);
                 throw ex;

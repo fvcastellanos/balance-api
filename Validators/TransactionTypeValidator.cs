@@ -1,34 +1,29 @@
-using System.Collections.Generic;
 using BalanceApi.Model.Domain;
 
 namespace BalanceApi.Validators
 {
     public class TransactionTypeValidator : IModelValidator<TransactionType>
     {
-        private List<string> errors;
-
+        private readonly ValidationResult _result;
         public TransactionTypeValidator()
         {
-            errors = new List<string>();
+            _result = new ValidationResult();
         }
 
-        public Result<List<string>, TransactionType> validate(TransactionType obj)
+        public ValidationResult Validate(TransactionType obj)
         {
-            if(obj == null)
+            if (obj == null)
             {
-                errors.Add("Transaction type is null");
-                return Result<List<string>, TransactionType>.ForFailure(errors);
+                _result.Add("Transaction type is null");
+                return _result;
             }
 
-            if((obj.name == null) || (obj.Equals("")))
+            if (string.IsNullOrEmpty(obj.Name))
             {
-                errors.Add("Transaction type name is required");
-                return Result<List<string>, TransactionType>.ForFailure(errors);
+                _result.Add("Transaction type name is required");
             }
 
-            // Should validate if the type already exists ??
-
-            return Result<List<string>, TransactionType>.ForSuccess(obj);
+            return _result;
         }
     }
 }

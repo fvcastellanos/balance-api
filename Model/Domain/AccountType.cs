@@ -3,12 +3,12 @@ namespace BalanceApi.Model.Domain
 {
     public class AccountType
     {
-        public long id { get; set;  }
-        public string name { get; set; }
+        public long Id { get; set;  }
+        public string Name { get; set; }
 
         public AccountType(long id, string name) {
-            this.id = id;
-            this.name = name;
+            this.Id = id;
+            this.Name = name;
         }
 
         public AccountType() {

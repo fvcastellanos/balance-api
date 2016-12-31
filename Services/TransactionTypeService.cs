@@ -8,14 +8,14 @@ namespace BalanceApi.Services
 {
     public class TransactionTypeService
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         private readonly ITransactionTypeDao _transactionTypeDao;
 
         public TransactionTypeService(ILogger<TransactionTypeService> logger, ITransactionTypeDao transactionTypeDao)
         {
-            this._logger = logger;
-            this._transactionTypeDao = transactionTypeDao;
+            _logger = logger;
+            _transactionTypeDao = transactionTypeDao;
         }
 
         public Result<Exception, List<TransactionType>> GetAll() {
@@ -23,6 +23,7 @@ namespace BalanceApi.Services
             {
                 _logger.LogInformation("Getting all the transaction types");
                 var list = _transactionTypeDao.GetAll();
+
                 return Result<Exception, List<TransactionType>>.ForSuccess(list); 
             }
             catch(Exception ex)
@@ -37,6 +38,7 @@ namespace BalanceApi.Services
             {
                 _logger.LogInformation("Getting transaction type with id: {0}", id);
                 var transactionType = _transactionTypeDao.GetById(id);
+
                 return Result<Exception, TransactionType>.ForSuccess(transactionType);
             }
             catch(Exception ex)
@@ -55,12 +57,11 @@ namespace BalanceApi.Services
                 if(id != 0)
                 {
                     TransactionType value = _transactionTypeDao.GetById(id);
+
                     return Result<Exception, TransactionType>.ForSuccess(value);
                 }
-                else 
-                {
-                    return Result<Exception, TransactionType>.ForFailure(new Exception("Can't create new account type"));
-                }
+
+                return Result<Exception, TransactionType>.ForFailure(new Exception("Can't create new account type"));
             }
             catch(Exception ex)
             {
@@ -71,8 +72,9 @@ namespace BalanceApi.Services
         public Result<Exception, TransactionType> Update(TransactionType transactionType) {
             try
             {
-                _logger.LogInformation("Updating transaction type: {0}", transactionType.name);
-                var transactionTypeOld = _transactionTypeDao.GetById(transactionType.id);
+                _logger.LogInformation("Updating transaction type: {0}", transactionType.Name);
+                var transactionTypeOld = _transactionTypeDao.GetById(transactionType.Id);
+
                 if(transactionTypeOld == null)
                 {
                     return Result<Exception, TransactionType>.ForFailure(new Exception("Transaction Type not found"));
@@ -95,6 +97,7 @@ namespace BalanceApi.Services
                 _logger.LogInformation("Deleting Transaction Type with id: {0}", id);
                 var rows = _transactionTypeDao.Delete(id);
                 _logger.LogInformation("Transaction Type with Id: {0} was deleted", id);
+
                 return Result<Exception, int>.ForSuccess(rows);
             }
             catch (Exception ex)
