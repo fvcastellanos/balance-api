@@ -16,8 +16,8 @@ namespace BalanceApi.Controllers
             return StatusCode((int)HttpStatusCode.InternalServerError, payload);
         }
 
-        protected IActionResult Accepted(object payload) {
-            return StatusCode((int)HttpStatusCode.Accepted, payload);
-        }
+        // protected IActionResult Accepted(object payload) {
+        //     return StatusCode((int)HttpStatusCode.Accepted, payload);
+        // }
     }
 }
