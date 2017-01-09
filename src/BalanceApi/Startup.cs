@@ -23,8 +23,8 @@ namespace BalanceApi
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // Not completely sure if this gonna work on production
-                // .SetBasePath(env.ContentRootPath)
+                // .SetBasePath(Directory.GetCurrentDirectory()) // Not completely sure if this gonna work on production
+                .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 ;
