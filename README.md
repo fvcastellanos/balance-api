@@ -38,3 +38,11 @@ cd src/BalanceApi/Migrations
 ./clean.sh
 ```
 
+## Unit tests
+
+In order to run the set of unit tests you need to follow this instructions:
+
+* Move to the test project ``` cd test/BalanceApi.Tests ```
+* Restore the dependencies ``` dotnet restore ```
+* Run the tests ``` dotnet test ```
+
