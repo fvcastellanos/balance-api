@@ -42,7 +42,8 @@ namespace BalanceApi
             services.AddLogging();
             services.AddOptions();
             services.AddMvc();
-
+            services.AddSwaggerGen();
+            
             services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
 
             // Data Repositories
@@ -67,6 +68,8 @@ namespace BalanceApi
             loggerFactory.AddDebug();
 
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
     }
 }
