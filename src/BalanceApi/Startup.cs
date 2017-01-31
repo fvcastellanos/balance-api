@@ -9,9 +9,9 @@ using BalanceApi.Model.Data;
 using BalanceApi.Model.Data.Dapper;
 using BalanceApi.Domain;
 
-using System.IO;
 using BalanceApi.Validators;
 using BalanceApi.Model.Domain;
+using BalanceApi.Security;
 
 namespace BalanceApi
 {
@@ -35,6 +35,9 @@ namespace BalanceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Authorization
+            services.AddAuthorization();
+
             // Security services
             services.AddCors();
 
@@ -67,6 +70,10 @@ namespace BalanceApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseBasicAuthentication(options => {
+                options.Realm = "BalanceApi";
+                options.Events = new CustomAuthenticationEvent();
+            });
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUi();
