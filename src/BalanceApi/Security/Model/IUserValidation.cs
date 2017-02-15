@@ -1,0 +1,4 @@
+namespace BalanceApi.Security.Model
+{
+    
+}

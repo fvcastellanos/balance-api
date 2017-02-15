@@ -46,7 +46,7 @@ namespace BalanceApi
             services.AddOptions();
             services.AddMvc();
             services.AddSwaggerGen();
-            
+
             services.Configure<AppSettings>(x => Configuration.GetSection("AppSettings").Bind(x));
 
             // Data Repositories
@@ -70,9 +70,11 @@ namespace BalanceApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            IProviderDao providerDao = app.ApplicationServices.GetService<IProviderDao>();
+
             app.UseBasicAuthentication(options => {
                 options.Realm = "BalanceApi";
-                options.Events = new CustomAuthenticationEvent();
+                options.Events = new CustomAuthenticationEvent(providerDao);
             });
             app.UseMvc();
             app.UseSwagger();
