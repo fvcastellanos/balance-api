@@ -1,31 +1,30 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using BalanceApi.Model.Data;
-using BalanceApi.Model.Domain;
+using BalanceApi.Security.Service;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace BalanceApi.Security
 {
     public class CustomAuthenticationEvent : BasicEvents
     {
-        private IProviderDao _providerDao;
+        private SecurityService _securityService;
 
-        public CustomAuthenticationEvent(IProviderDao providerDao)
+        public CustomAuthenticationEvent(SecurityService securityService)
         {
-            _providerDao = providerDao;
+            _securityService = securityService;
         }
 
         public override Task SignIn(BasicSignInContext context)
         {
-            List<Provider> providers = _providerDao.GetAll();
 
-            if (context.Username == "usr")
+            var userAuthenticated = _securityService.AuthenticateUser(context.Username, context.Password);
+
+            if (userAuthenticated)
             {
-                
+                return Task.FromResult(0);
             }
 
-            return Task.FromResult(0);
+            return Task.FromException(new Exception("Not Authorized"));
         }
     }
 }
