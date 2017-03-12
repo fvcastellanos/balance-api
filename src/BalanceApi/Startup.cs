@@ -12,6 +12,9 @@ using BalanceApi.Domain;
 using BalanceApi.Validators;
 using BalanceApi.Model.Domain;
 using BalanceApi.Security;
+using BalanceApi.Security.Model;
+using BalanceApi.Security.Model.Dapper;
+using BalanceApi.Security.Service;
 
 namespace BalanceApi
 {
@@ -53,11 +56,18 @@ namespace BalanceApi
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
             services.AddSingleton<IProviderDao, ProviderDao>();
             services.AddSingleton<ITransactionTypeDao, TransactionTypeDao>();
+            services.AddSingleton<IUserDao, UserDao>();
 
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
             services.AddSingleton<TransactionTypeService, TransactionTypeService>();
+
+            services.AddSingleton<SecurityService, SecurityService>();
+
+            // Security services
+            services.AddSingleton<CustomAuthenticationEvent, CustomAuthenticationEvent>();
+            
 
             // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
@@ -70,15 +80,22 @@ namespace BalanceApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            IProviderDao providerDao = app.ApplicationServices.GetService<IProviderDao>();
+            CustomAuthenticationEvent customAuthenticationEvent = GetCustomAuthenticationEvent(app);
 
             app.UseBasicAuthentication(options => {
                 options.Realm = "BalanceApi";
-                options.Events = new CustomAuthenticationEvent(providerDao);
+                options.Events = customAuthenticationEvent;
             });
+
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUi();
         }
+
+        private CustomAuthenticationEvent GetCustomAuthenticationEvent(IApplicationBuilder app)
+        {
+            return app.ApplicationServices.GetService<CustomAuthenticationEvent>();
+        }
+
     }
 }
