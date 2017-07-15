@@ -237,7 +237,7 @@ _Pvt_Extensions
 .vscode/
 
 # Visual Studio
-*.sln
+#*.sln
 *.xproj
 *.xproj.user
 
