@@ -32,6 +32,11 @@ namespace BalanceApi.Model.Domain
             return _success;
         }
 
+        public bool HasErrors()
+        {
+            return !IsSuccess();
+        }
+
         public static Result<TL, TR> ForSuccess(TR obj) {
             return new Result<TL, TR>(obj);
         }
