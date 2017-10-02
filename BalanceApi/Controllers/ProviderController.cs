@@ -1,8 +1,5 @@
 
-using System;
-using System.Collections.Generic;
-using BalanceApi.Controllers.Views;
-using BalanceApi.Controllers.Views.Request;
+using BalanceApi.Controllers.ViewModels;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using BalanceApi.Validators;

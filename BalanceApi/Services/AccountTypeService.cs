@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BalanceApi.Services
 {
-    public class AccountTypeService
+    public class AccountTypeService : BaseService
     {
         private readonly ILogger<AccountTypeService> _logger;
         private readonly IAccountTypeDao _accountTypeDao;
@@ -18,34 +18,34 @@ namespace BalanceApi.Services
             _logger = logger;
         }
 
-        public Result<Exception, List<AccountType>> GetAccountTypes()
+        public Result<Error, List<AccountType>> GetAccountTypes()
         {
             try
             {
                 _logger.LogInformation("Getting all the account types");
                 var list = _accountTypeDao.FindAll();
 
-                return Result<Exception, List<AccountType>>.ForSuccess(list);
+                return Result<Error, List<AccountType>>.ForSuccess(list);
             }
             catch(Exception ex)
             {
                 _logger.LogError("Unable to get the account types, {0}", ex);
-                return Result<Exception, List<AccountType>>.ForFailure(ex);
+                return Result<Error, List<AccountType>>.ForFailure(BuildError("Can't get the account types"));
             }
         }
 
-        public Result<Exception, AccountType> GetAccountTypeById(long id)
+        public Result<Error, AccountType> GetAccountTypeById(long id)
         {
             try
             {
                 _logger.LogInformation("Getting Account Type for id: {0}", id);
                 var accountType = _accountTypeDao.FindById(id);
 
-                return Result<Exception, AccountType>.ForSuccess(accountType);
+                return Result<Error, AccountType>.ForSuccess(accountType);
             } catch(Exception ex)
             {
                 _logger.LogError("Unable to get the account type: {0}, due: {1}", id, ex);
-                return Result<Exception, AccountType>.ForFailure(ex);
+                return Result<Error, AccountType>.ForFailure(BuildError("Can't get the account type requested"));
             }
         }
 
@@ -63,11 +63,11 @@ namespace BalanceApi.Services
             catch(Exception ex)
             {
                 _logger.LogError("Unable to create a new account type due: {0}", ex);
-                return Result<Error, AccountType>.ForFailure(new Error(ex.Message));
+                return Result<Error, AccountType>.ForFailure(BuildError("Can't create the account type"));
             }
         }
 
-        public Result<Exception, int> deleteAccountType(long id)
+        public Result<Exception, int> DeleteAccountType(long id)
         {
             try
             {

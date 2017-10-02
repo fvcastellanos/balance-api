@@ -34,18 +34,19 @@ namespace BalanceApi.Services
             }
         }
 
-        public Result<Exception, Provider> GetById(long id)
+        public Result<Error, Provider> GetById(long id)
         {
             try
             {
                 _logger.LogInformation("Getting provider with id: {0}", id);
                 var provider = _providerDao.GetById(id);
 
-                return Result<Exception, Provider>.ForSuccess(provider);
+                return Result<Error, Provider>.ForSuccess(provider);
             }
             catch (Exception ex)
             {
-                return Result<Exception, Provider>.ForFailure(ex);
+                _logger.LogError("Unable to get provider with id: {0}", id, ex);
+                return Result<Error, Provider>.ForFailure(BuildError("Can't get the Provider"));
             }
         }
 
@@ -62,14 +63,6 @@ namespace BalanceApi.Services
             {
                 return Result<Exception, List<Provider>>.ForFailure(ex);
             }
-        }
-
-        private bool IsValid(Provider provider) {
-            if (provider == null) {
-                return false;
-            }
-
-            return (provider.Name != null) && (provider.Country != null);
         }
 
         public Result<Error, Provider> New(Provider provider) {

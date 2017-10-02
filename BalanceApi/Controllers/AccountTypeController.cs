@@ -1,5 +1,4 @@
-﻿using BalanceApi.Controllers.Views;
-using BalanceApi.Controllers.Views.Request;
+﻿using BalanceApi.Controllers.ViewModels;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +77,7 @@ namespace BalanceApi.Controllers
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id) {
-            var result = _service.deleteAccountType(id);
+            var result = _service.DeleteAccountType(id);
 
             if (result.HasErrors()) return ForFailure(result.GetFailure());
             
