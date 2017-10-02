@@ -3,7 +3,6 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
-
 -- -----------------------------------------------------
 -- Schema account_balance
 -- -----------------------------------------------------
@@ -22,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`provider` (
   `name` VARCHAR(150) NOT NULL,
   `country` VARCHAR(10) NOT NULL DEFAULT 'GT',
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -32,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`account_type` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -60,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`account` (
     REFERENCES `account_balance`.`account_type` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -73,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`user` (
   `password` VARCHAR(250) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `idx_user_email` (`email` ASC))
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -84,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`transaction_type` (
   `name` VARCHAR(45) NOT NULL,
   `credit` BIT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -112,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`transaction` (
     REFERENCES `account_balance`.`account` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -137,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`scheduled_transaction` (
     REFERENCES `account_balance`.`transaction_type` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -154,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`transaction_detail` (
     REFERENCES `account_balance`.`transaction` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 -- -----------------------------------------------------
@@ -177,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `account_balance`.`user_account` (
     REFERENCES `account_balance`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB ROW_FORMAT=DYNAMIC;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

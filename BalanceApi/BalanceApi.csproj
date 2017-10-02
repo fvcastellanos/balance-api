@@ -20,7 +20,4 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\Views\Response" />
-  </ItemGroup>
 </Project>
