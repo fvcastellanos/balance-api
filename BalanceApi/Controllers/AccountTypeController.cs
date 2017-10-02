@@ -1,4 +1,5 @@
 ﻿using BalanceApi.Controllers.Views;
+using BalanceApi.Controllers.Views.Request;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +65,12 @@ namespace BalanceApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] AccountType accountType) {
+        public IActionResult Update([FromBody] UpdateAccountType updateAccountType)
+        {
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            var accountType = new AccountType(updateAccountType.Id, updateAccountType.Name);
             var result = _service.UpdateAccountType(accountType);
 
             return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(result.GetPayload());

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using BalanceApi.Controllers.Views;
+using BalanceApi.Controllers.Views.Request;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using BalanceApi.Validators;
@@ -78,11 +79,17 @@ namespace BalanceApi.Controllers {
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Provider provider) {
-            var validation = _validator.Validate(provider);
+        public IActionResult Update([FromBody] UpdateProvider updateProvider)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (validation.HasFailed()) return BadRequest(validation.GetErrors());
-
+            var provider = new Provider()
+            {
+                Id = updateProvider.Id,
+                Name = updateProvider.Name,
+                Country = updateProvider.Country
+            };
+            
             var r = _service.Update(provider);
 
             if (r.HasErrors()) return ForFailure(r.GetFailure());

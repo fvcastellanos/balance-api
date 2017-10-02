@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Controllers.Views
+namespace BalanceApi.Controllers.Views.Request
 {
     public class AddProvider
     {
