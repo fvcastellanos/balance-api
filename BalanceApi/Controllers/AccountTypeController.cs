@@ -1,4 +1,5 @@
-﻿using BalanceApi.Model.Domain;
+﻿using BalanceApi.Controllers.Views;
+using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -42,8 +43,12 @@ namespace BalanceApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] AccountType accountType) {
-            var result = _service.NewAccountType(accountType);
+        public IActionResult New([FromBody] AddAccountType accountType) {
+
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+            
+            var result = _service.NewAccountType(accountType.Name);
             
             if(result.IsSuccess()) {
                 var item = result.GetPayload();
@@ -54,35 +59,28 @@ namespace BalanceApi.Controllers
                     return BadRequest();
                 }
             } else {
-                return ForException(result.GetFailure());
+                return ForFailure(result.GetFailure());
             }
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] AccountType accountType) {
             var result = _service.UpdateAccountType(accountType);
-            
-            if(result.IsSuccess()) {
-                return Ok(result.GetPayload());
-            } else {
-                return ForException(result.GetFailure());
-            }
+
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(result.GetPayload());
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id) {
             var result = _service.deleteAccountType(id);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
             
-            if(result.IsSuccess()) {
-                int rows = result.GetPayload();
-                if(rows > 0) {
-                    return Accepted(rows);
-                } else {
-                    return NotFound();
-                }
-            } else {
-                return ForException(result.GetFailure());
-            }
+            var rows = result.GetPayload();
+            
+            if(rows > 0) return Accepted(rows);
+
+            return NotFound();
         }
     }
 }

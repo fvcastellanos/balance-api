@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using BalanceApi.Controllers.Views;
 using BalanceApi.Model.Domain;
 using BalanceApi.Services;
 using BalanceApi.Validators;
@@ -30,12 +31,10 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.GetAll();
 
-            if (result.IsSuccess()) {
-                return Ok(result.GetPayload());
-            }
+            if (result.IsSuccess()) return Ok(result.GetPayload());
 
             _logger.LogError("Unable to get the providers due: {0}", result.GetFailure());
-            return ForException(result.GetFailure());
+            return ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
@@ -43,19 +42,12 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.GetById(id);
 
-            if (result.IsSuccess())
-            {
-                var provider = result.GetPayload();
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-                if (provider != null)
-                {
-                    return Ok(provider);
-                }
+            var provider = result.GetPayload();
+            if (provider != null) return Ok(provider);
 
-                return NotFound();
-            }
-
-            return ForException(result.GetFailure());
+            return NotFound();
         }
 
         [HttpGet("country/{country}")]
@@ -63,58 +55,42 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.GetByCountry(country);
 
-            if (result.IsSuccess())
-            {
-                return Ok(result.GetPayload());
-            }
-
-            return ForException(result.GetFailure());
+            return result.IsSuccess() ? Ok(result.GetPayload()) : ForFailure(result.GetFailure());
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] Provider provider)
+        public IActionResult New([FromBody] AddProvider newProvider)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            var provider = new Provider() { Name = newProvider.Name, Country = newProvider.Country };
             var result = _service.New(provider);
 
-            if (result.IsSuccess())
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var p = result.GetPayload();
+            if (p != null)
             {
-                var p = result.GetPayload();
-
-                if(p != null )
-                {
-                    return Created("New provider", p);
-                }
-
-                return BadRequest();
+                return Created("New provider", p);
             }
 
-            return ForException(result.GetFailure());
+            return BadRequest();
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] Provider provider) {
             var validation = _validator.Validate(provider);
 
-            if (validation.HasFailed())
-            {
-                return BadRequest(validation.GetErrors());
-            }
+            if (validation.HasFailed()) return BadRequest(validation.GetErrors());
 
             var r = _service.Update(provider);
 
-            if (r.IsSuccess())
-            {
-                var p = r.GetPayload();
+            if (r.HasErrors()) return ForFailure(r.GetFailure());
 
-                if(p != null)
-                {
-                    return Created("Update Provider", p);
-                }
+            var p = r.GetPayload();
+            if (p != null) return Created("Update Provider", p);
 
-                return NotFound();
-            }
-
-            return ForException(r.GetFailure());
+            return NotFound();
         }
 
         [HttpDelete("{id}")]
@@ -122,19 +98,12 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.Delete(id);
 
-            if (result.IsSuccess())
-            {
-                var rows = result.GetPayload();
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var rows = result.GetPayload();
+            if (rows > 0) return Accepted(rows);
 
-                if (rows > 0)
-                {
-                    return Accepted(rows);
-                }
-
-                return NotFound();
-            }
-
-            return ForException(result.GetFailure());
+            return NotFound();
         }
     }
 }

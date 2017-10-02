@@ -49,22 +49,21 @@ namespace BalanceApi.Services
             }
         }
 
-        public Result<Exception, AccountType> NewAccountType(AccountType accountType)
+        public Result<Error, AccountType> NewAccountType(string name)
         {
             try
             {
-                if (accountType?.Name != null)
-                {
-                    var value = _accountTypeDao.AddNew(accountType.Name);
-                    return Result<Exception, AccountType>.ForSuccess(new AccountType(value, accountType.Name));
-                }
-
-                return Result<Exception, AccountType>.ForFailure(new Exception("Can't create account type"));
+                if (name == null) return Result<Error, AccountType>.ForFailure(new Error("Can't create account type"));
+                
+                _logger.LogInformation("Adding new account type: {0}", name);
+                var value = _accountTypeDao.AddNew(name);
+                
+                return Result<Error, AccountType>.ForSuccess(new AccountType(value, name));
             }
             catch(Exception ex)
             {
                 _logger.LogError("Unable to create a new account type due: {0}", ex);
-                return Result<Exception, AccountType>.ForFailure(ex);
+                return Result<Error, AccountType>.ForFailure(new Error(ex.Message));
             }
         }
 
