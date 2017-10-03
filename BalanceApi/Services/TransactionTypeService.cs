@@ -69,41 +69,40 @@ namespace BalanceApi.Services
             }
         }
 
-        public Result<Exception, TransactionType> Update(TransactionType transactionType) {
+        public Result<Error, TransactionType> Update(TransactionType transactionType) {
             try
             {
                 _logger.LogInformation("Updating transaction type: {0}", transactionType.Name);
                 var transactionTypeOld = _transactionTypeDao.GetById(transactionType.Id);
 
-                if(transactionTypeOld == null)
-                {
-                    return Result<Exception, TransactionType>.ForFailure(new Exception("Transaction Type not found"));
-                }
+                if (transactionTypeOld == null) return BuildFailedResult<TransactionType>("Transaction Type not found");
 
                 var updated = _transactionTypeDao.Update(transactionType);
 
-                return Result<Exception, TransactionType>.ForSuccess(updated);
+                return BuildSuccessResult(updated);
             }
             catch(Exception ex)
             {
-                return Result<Exception, TransactionType>.ForFailure(ex);
+                _logger.LogInformation("Can't update transaction type: ", ex);
+                return BuildFailedResult<TransactionType>("Can't update transaction type");
             }
         }
 
-        public Result<Exception, int> Delete(long id)
+        public Result<Error, int> Delete(long id)
         {
             try
             {
                 _logger.LogInformation("Deleting Transaction Type with id: {0}", id);
+                
                 var rows = _transactionTypeDao.Delete(id);
                 _logger.LogInformation("Transaction Type with Id: {0} was deleted", id);
 
-                return Result<Exception, int>.ForSuccess(rows);
+                return BuildSuccessResult(rows);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Unable to delete Transaction type with id: {0} -> {1}", id, ex);
-                return Result<Exception, int>.ForFailure(ex);
+                return BuildFailedResult<int>("Can't delete transaction type");
             }
         }
 

@@ -63,44 +63,33 @@ namespace BalanceApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] TransactionType transactionType) 
+        public IActionResult Update([FromBody] UpdateTransactionTypeRequest transactionTypeRequest)
         {
-            var validation = _validator.Validate(transactionType);
 
-            if (validation.HasFailed())
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var transactionType = new TransactionType()
             {
-                return BadRequest(validation.GetErrors());
-            }
-
+                Id = transactionTypeRequest.Id,
+                Name = transactionTypeRequest.Name,
+                Credit = transactionTypeRequest.Credit
+            };
+            
             var result = _transactionTypeService.Update(transactionType);
-
-            if (result.IsSuccess())
-            {
-                return Created("UpdateTransactionType", result.GetPayload());
-            }
-
-            return ForException(result.GetFailure());
-
+            return result.IsSuccess() ? Created("UpdateTransactionType", result.GetPayload()) : ForFailure(result.GetFailure());
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
             var result = _transactionTypeService.Delete(id);
+            
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            if (result.IsSuccess())
-            {
-                var rows = result.GetPayload();
+            var rows = result.GetPayload();
+            if (rows > 0) return Accepted(rows);
 
-                if (rows > 0)
-                {
-                    return Accepted(rows);
-                }
-
-                return NotFound();
-            }
-
-            return ForException(result.GetFailure());
+            return NotFound();
         }
     }
 }
