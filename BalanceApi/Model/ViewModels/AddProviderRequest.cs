@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Controllers.ViewModels
+namespace BalanceApi.Model.ViewModels
 {
-    public class UpdateProvider
+    public class AddProvider
     {
-        [Required]
-        public long Id { get; set; }
-
         [Required]
         [StringLength(100)]
         public string Name { get; set; }

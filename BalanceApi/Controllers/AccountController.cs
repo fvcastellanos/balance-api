@@ -1,34 +1,42 @@
 ﻿using System.Collections.Generic;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;
+using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BalanceApi.Controllers
 {
-    [Route("api/[controller]")]
-    public class AccountController : Controller
+    [Route(template: "api/account")]
+    public class AccountController : BaseController
     {
-        private readonly IAccountTypeDao _accountTypeDao;
+        private readonly AccountService _accountService;
         private ILogger<AccountController> _logger;
 
-        public AccountController(IAccountTypeDao accountTypeDao,
-            ILogger<AccountController> logger)
+        public AccountController(AccountService accountService, ILogger<AccountController> logger)
         {
             _logger = logger;
-            _accountTypeDao = accountTypeDao;
+            _accountService = accountService;
         }
 
         [HttpGet]
-        public List<AccountType> Get()
+        public IActionResult GetAll()
         {
-            return _accountTypeDao.FindAll();
+            var result = _accountService.GetAll();
+            return result.IsSuccess()? Ok(result.GetPayload()) : ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
-        public AccountType GetById(long id)
+        public IActionResult GetById(long id)
         {
-            return _accountTypeDao.FindById(id);
+            var result = _accountService.GetById(id);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var account = result.GetPayload();
+            if (account == null) return NotFound();
+
+            return Ok(account);
         }
 
     }

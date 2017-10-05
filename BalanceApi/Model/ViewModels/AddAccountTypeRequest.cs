@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Controllers.ViewModels
+namespace BalanceApi.Model.ViewModels
 {
     public class AddAccountType
     {

@@ -1,5 +1,5 @@
-﻿using BalanceApi.Controllers.ViewModels;
-using BalanceApi.Model.Domain;
+﻿using BalanceApi.Model.Domain;
+using BalanceApi.Model.ViewModels;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
