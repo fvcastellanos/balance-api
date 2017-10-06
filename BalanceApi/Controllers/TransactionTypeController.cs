@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using BalanceApi.Model.Domain;
 using BalanceApi.Model.Views.Request;
+using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +14,7 @@ namespace BalanceApi.Controllers
     public class TransactionTypeController : BaseController
     {
         private readonly ILogger _logger;
-
         private readonly TransactionTypeService _transactionTypeService;
-
         private readonly IModelValidator<TransactionType> _validator;
 
         public TransactionTypeController(ILogger<TransactionTypeController> logger, TransactionTypeService transactionTypeService,
@@ -28,11 +29,11 @@ namespace BalanceApi.Controllers
         public IActionResult GetAll()
         {
             var result = _transactionTypeService.GetAll();
-            
-            if (result.IsSuccess()) return Ok(result.GetPayload());
-            
-            _logger.LogError("Unable to get the providers because: {0}", result.GetFailure());
-            return ForFailure(result.GetFailure());
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var responseView = BuildResponseList(result.GetPayload());
+            return Ok(responseView);
         }
 
         [HttpGet("{id}")]
@@ -45,7 +46,8 @@ namespace BalanceApi.Controllers
             var value = result.GetPayload();
             if (value == null) return NotFound();
 
-            return Ok(result.GetPayload());
+            var responseView = BuildResponse(result.GetPayload());
+            return Ok(responseView);
         }
 
         [HttpPost]
@@ -58,13 +60,13 @@ namespace BalanceApi.Controllers
 
             if (result.HasErrors()) ForFailure(result.GetFailure());
 
-            return Created("NewTransactionType", result.GetPayload());
+            var responseView = BuildResponse(result.GetPayload());
+            return Created("NewTransactionType", responseView);
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] UpdateTransactionTypeRequest transactionTypeRequest)
         {
-
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var transactionType = new TransactionType()
@@ -75,7 +77,10 @@ namespace BalanceApi.Controllers
             };
             
             var result = _transactionTypeService.Update(transactionType);
-            return result.IsSuccess() ? Created("UpdateTransactionType", result.GetPayload()) : ForFailure(result.GetFailure());
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var responseView = BuildResponse(result.GetPayload());
+            return Accepted(responseView);
         }
 
         [HttpDelete("{id}")]
@@ -89,6 +94,21 @@ namespace BalanceApi.Controllers
             if (rows > 0) return Accepted(rows);
 
             return NotFound();
+        }
+
+        private ICollection<TransactionTypeResponse> BuildResponseList(IEnumerable<TransactionType> transactionTypes)
+        {
+            var responseList = (from transactionType in transactionTypes
+                    select new TransactionTypeResponse(transactionType.Id, transactionType.Name,
+                        transactionType.Credit))
+                .ToList();
+
+            return responseList;
+        }
+
+        private TransactionTypeResponse BuildResponse(TransactionType transactionType)
+        {
+            return new TransactionTypeResponse(transactionType.Id, transactionType.Name, transactionType.Credit);
         }
     }
 }
