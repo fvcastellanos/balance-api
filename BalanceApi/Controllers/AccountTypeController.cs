@@ -1,4 +1,7 @@
-﻿using BalanceApi.Model.Domain;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using BalanceApi.Model.Domain;
 using BalanceApi.Model.ViewModels;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +28,7 @@ namespace BalanceApi.Controllers
         public IActionResult GetAll()
         {
             var result = _service.GetAccountTypes();
-            return result.IsSuccess() ? Ok(result.GetPayload()) : ForFailure(result.GetFailure());
+            return result.IsSuccess() ? Ok(_buildResponseList(result.GetPayload())) : ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
@@ -39,7 +42,7 @@ namespace BalanceApi.Controllers
             if(accountType == null)
                 return NotFound();
             
-            return Ok(accountType);
+            return Ok(_buildResponse(accountType));
         }
 
         [HttpPost]
@@ -54,7 +57,7 @@ namespace BalanceApi.Controllers
                 var item = result.GetPayload();
                 
                 if(item != null) {
-                    return Created("New", item);
+                    return Created("NewAccountType", _buildResponse(item));
                 } else {
                     return BadRequest();
                 }
@@ -72,7 +75,7 @@ namespace BalanceApi.Controllers
             var accountType = new AccountType(updateAccountType.Id, updateAccountType.Name);
             var result = _service.UpdateAccountType(accountType);
 
-            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(result.GetPayload());
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(_buildResponse(result.GetPayload()));
         }
 
         [HttpDelete("{id}")]
@@ -87,5 +90,19 @@ namespace BalanceApi.Controllers
 
             return NotFound();
         }
+
+        private ICollection<AccountTypeResponse> _buildResponseList(ICollection<AccountType> accountTypes)
+        {
+            var responseList = (from accountType in accountTypes
+                select new AccountTypeResponse(accountType.Id, accountType.Name)).ToList();
+
+            return responseList;
+        }
+
+        private AccountTypeResponse _buildResponse(AccountType accountType)
+        {
+            return new AccountTypeResponse(accountType.Id, accountType.Name);
+        }
+        
     }
 }
