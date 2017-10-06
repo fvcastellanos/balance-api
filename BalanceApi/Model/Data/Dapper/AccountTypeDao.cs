@@ -29,7 +29,7 @@ namespace BalanceApi.Model.Data.Dapper
             catch(Exception ex)
             {
                 logger.LogError("Unable to get the account types", ex);
-                throw ex;
+                throw;
             }
         }
 

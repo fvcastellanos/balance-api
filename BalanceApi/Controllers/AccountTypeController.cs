@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using System.Collections;
 using System.Collections.Generic;
-
-using BalanceApi.Services;
+using System.Linq;
 using BalanceApi.Model.Domain;
-using System;
+using BalanceApi.Model.Views.Request;
+using BalanceApi.Model.Views.Response;
+using BalanceApi.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,80 +15,95 @@ namespace BalanceApi.Controllers
     [Route("api/account-type")]
     public class AccountTypeController : BaseController
     {
-        private ILogger<AccountTypeController> logger;
-        private AccountTypeService service;
+        private ILogger<AccountTypeController> _logger;
+        private readonly AccountTypeService _service;
 
         public AccountTypeController(ILogger<AccountTypeController> logger,
             AccountTypeService service)
         {
-            this.logger = logger;
-            this.service = service;
+            this._logger = logger;
+            this._service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            Result<Exception, List<AccountType>> result = service.GetAccountTypes();
-            if(result.IsSuccess()) {
-                return Ok(result.GetPayload());
-            } else {
-                return ForException(result.GetFailure());
-            }
+            var result = _service.GetAccountTypes();
+            return result.IsSuccess() ? Ok(_buildResponseList(result.GetPayload())) : ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id) {
-            Result<Exception, AccountType> result = service.GetAccountTypeById(id);
-            if(result.IsSuccess()) {
-                AccountType accountType = result.GetPayload();
-                if(accountType != null) {
-                    return Ok(accountType);
-                } else {
-                    return NotFound();
-                }
-            } else {
-                return ForException(result.GetFailure());
-            }
+            var result = _service.GetAccountTypeById(id);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var accountType = result.GetPayload();
+                
+            if(accountType == null)
+                return NotFound();
+            
+            return Ok(_buildResponse(accountType));
         }
 
         [HttpPost]
-        public IActionResult New( [FromBody] AccountType accountType) {
-            Result<Exception, AccountType> result = service.NewAccountType(accountType);
+        public IActionResult New([FromBody] AddAccountType accountType) {
+
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+            
+            var result = _service.NewAccountType(accountType.Name);
+            
             if(result.IsSuccess()) {
-                AccountType item = result.GetPayload();
+                var item = result.GetPayload();
+                
                 if(item != null) {
-                    return Created("New", item);
+                    return Created("NewAccountType", _buildResponse(item));
                 } else {
                     return BadRequest();
                 }
             } else {
-                return ForException(result.GetFailure());
+                return ForFailure(result.GetFailure());
             }
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] AccountType accountType) {
-            Result<Exception, AccountType> result = service.UpdateAccountType(accountType);
-            if(result.IsSuccess()) {
-                return Ok(result.GetPayload());
-            } else {
-                return ForException(result.GetFailure());
-            }
+        public IActionResult Update([FromBody] UpdateAccountType updateAccountType)
+        {
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            var accountType = new AccountType(updateAccountType.Id, updateAccountType.Name);
+            var result = _service.UpdateAccountType(accountType);
+
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(_buildResponse(result.GetPayload()));
         }
 
-        [HttpDeleteAttribute("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(long id) {
-            Result<Exception, int> result = service.deleteAccountType(id);
-            if(result.IsSuccess()) {
-                int rows = result.GetPayload();
-                if(rows > 0) {
-                    return Accepted(rows);
-                } else {
-                    return NotFound();
-                }
-            } else {
-                return ForException(result.GetFailure());
-            }
+            var result = _service.DeleteAccountType(id);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var rows = result.GetPayload();
+            
+            if(rows > 0) return Accepted(rows);
+
+            return NotFound();
         }
+
+        private ICollection<AccountTypeResponse> _buildResponseList(ICollection<AccountType> accountTypes)
+        {
+            var responseList = (from accountType in accountTypes
+                select new AccountTypeResponse(accountType.Id, accountType.Name)).ToList();
+
+            return responseList;
+        }
+
+        private AccountTypeResponse _buildResponse(AccountType accountType)
+        {
+            return new AccountTypeResponse(accountType.Id, accountType.Name);
+        }
+        
     }
 }

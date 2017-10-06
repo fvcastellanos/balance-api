@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BalanceApi.Services
 {
-    public class ProviderService
+    public class ProviderService : BaseService
     {
         private readonly ILogger _logger;
 
@@ -18,77 +18,67 @@ namespace BalanceApi.Services
             _providerDao = providerDao;
         }
 
-        public Result<Exception, List<Provider>> GetAll()
+        public Result<Error, List<Provider>> GetAll()
         {
             try
             {
                 _logger.LogInformation("Getting all the providers");
                 var providers = _providerDao.GetAll();
 
-                return Result<Exception, List<Provider>>.ForSuccess(providers);
+                return Result<Error, List<Provider>>.ForSuccess(providers);
             }
             catch(Exception ex)
             {
-                return Result<Exception, List<Provider>>.ForFailure(ex);
+                _logger.LogError("Exception: ", ex);
+                return Result<Error, List<Provider>>.ForFailure(BuildError(ex.Message));
             }
         }
 
-        public Result<Exception, Provider> GetById(long id)
+        public Result<Error, Provider> GetById(long id)
         {
             try
             {
                 _logger.LogInformation("Getting provider with id: {0}", id);
                 var provider = _providerDao.GetById(id);
 
-                return Result<Exception, Provider>.ForSuccess(provider);
+                return Result<Error, Provider>.ForSuccess(provider);
             }
             catch (Exception ex)
             {
-                return Result<Exception, Provider>.ForFailure(ex);
+                _logger.LogError("Unable to get provider with id: {0}", id, ex);
+                return Result<Error, Provider>.ForFailure(BuildError("Can't get the Provider"));
             }
         }
 
-        public Result<Exception, List<Provider>> GetByCountry(string country)
+        public Result<Error, List<Provider>> GetByCountry(string country)
         {
             try
             {
                 _logger.LogInformation("Getting provider for country: {0}", country);
                 var providers = _providerDao.GetByCountry(country);
 
-                return Result<Exception, List<Provider>>.ForSuccess(providers);
+                return BuildSuccessResult(providers);
             }
             catch(Exception ex)
             {
-                return Result<Exception, List<Provider>>.ForFailure(ex);
+                _logger.LogError("Can't get providers by country: ", ex);
+                return BuildFailedResult<List<Provider>>("Can't get provider by selected country");
             }
         }
 
-        private bool IsValid(Provider provider) {
-            if (provider == null) {
-                return false;
-            }
-
-            return (provider.Name != null) && (provider.Country != null);
-        }
-
-        public Result<Exception, Provider> New(Provider provider) {
+        public Result<Error, Provider> New(Provider provider) {
             try
             {
-                if (IsValid(provider))
-                {
-                    _logger.LogInformation("Adding a new provider with name: {0} and country: {1}", provider.Name, provider.Country);
-                    var id = _providerDao.New(provider.Name, provider.Country);
-                    var newProvider = _providerDao.GetById(id);
+                _logger.LogInformation("Adding a new provider with name: {0} and country: {1}", provider.Name, provider.Country);
+                var id = _providerDao.New(provider.Name, provider.Country);
+                var newProvider = _providerDao.GetById(id);
 
-                    return Result<Exception, Provider>.ForSuccess(newProvider);
-                }
-
-                return Result<Exception, Provider>.ForFailure(new Exception("Validation exception"));
+                return Result<Error, Provider>.ForSuccess(newProvider);
             }
             catch(Exception ex)
             {
                 _logger.LogError("Unable to create a new provider due: {0}", ex);
-                return Result<Exception, Provider>.ForFailure(ex);
+                return Result<Error, Provider>.ForFailure(BuildError(ex.Message));
             }
         }
 

@@ -1,5 +1,8 @@
-
+using System.Collections.Generic;
+using System.Linq;
 using BalanceApi.Model.Domain;
+using BalanceApi.Model.Views.Request;
+using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +14,7 @@ namespace BalanceApi.Controllers
     public class TransactionTypeController : BaseController
     {
         private readonly ILogger _logger;
-
         private readonly TransactionTypeService _transactionTypeService;
-
         private readonly IModelValidator<TransactionType> _validator;
 
         public TransactionTypeController(ILogger<TransactionTypeController> logger, TransactionTypeService transactionTypeService,
@@ -25,97 +26,89 @@ namespace BalanceApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll() {
+        public IActionResult GetAll()
+        {
             var result = _transactionTypeService.GetAll();
 
-            if (result.IsSuccess())
-            {
-                return Ok(result.GetPayload());
-            }
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            _logger.LogError("Unable to get the providers because: {0}", result.GetFailure());
-            return ForException(result.GetFailure());
+            var responseView = BuildResponseList(result.GetPayload());
+            return Ok(responseView);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id) 
         {
             var result = _transactionTypeService.GetById(id);
+            
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            if (result.IsSuccess())
-            {
-                var value = result.GetPayload();
-                if (value != null)
-                {
-                    return Ok(result.GetPayload());
-                }
+            var value = result.GetPayload();
+            if (value == null) return NotFound();
 
-                return NotFound();
-            }
-
-            _logger.LogError("Unable to get the transaction type with id: {0}", id);
-            return ForException(result.GetFailure());
+            var responseView = BuildResponse(result.GetPayload());
+            return Ok(responseView);
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] TransactionType transactionType)
+        public IActionResult New([FromBody] AddTransactionTypeRequest transactionTypeRequest)
         {
-            var validation = _validator.Validate(transactionType);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (validation.HasFailed())
-            {
-                return BadRequest(validation.GetErrors());
-            }
-
+            var transactionType = new TransactionType() { Name = transactionTypeRequest.Name, Credit = transactionTypeRequest.Credit };
             var result = _transactionTypeService.New(transactionType);
 
-            if (result.IsSuccess())
-            {
-                return Created("NewTransactionType", result.GetPayload());
-            }
+            if (result.HasErrors()) ForFailure(result.GetFailure());
 
-            return ForException(result.GetFailure());
+            var responseView = BuildResponse(result.GetPayload());
+            return Created("NewTransactionType", responseView);
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] TransactionType transactionType) 
+        public IActionResult Update([FromBody] UpdateTransactionTypeRequest transactionTypeRequest)
         {
-            var validation = _validator.Validate(transactionType);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (validation.HasFailed())
+            var transactionType = new TransactionType()
             {
-                return BadRequest(validation.GetErrors());
-            }
-
+                Id = transactionTypeRequest.Id,
+                Name = transactionTypeRequest.Name,
+                Credit = transactionTypeRequest.Credit
+            };
+            
             var result = _transactionTypeService.Update(transactionType);
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            if (result.IsSuccess())
-            {
-                return Created("UpdateTransactionType", result.GetPayload());
-            }
-
-            return ForException(result.GetFailure());
-
+            var responseView = BuildResponse(result.GetPayload());
+            return Accepted(responseView);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(long id)
         {
             var result = _transactionTypeService.Delete(id);
+            
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            if (result.IsSuccess())
-            {
-                var rows = result.GetPayload();
+            var rows = result.GetPayload();
+            if (rows > 0) return Accepted(rows);
 
-                if (rows > 0)
-                {
-                    return Accepted(rows);
-                }
+            return NotFound();
+        }
 
-                return NotFound();
-            }
+        private ICollection<TransactionTypeResponse> BuildResponseList(IEnumerable<TransactionType> transactionTypes)
+        {
+            var responseList = (from transactionType in transactionTypes
+                    select new TransactionTypeResponse(transactionType.Id, transactionType.Name,
+                        transactionType.Credit))
+                .ToList();
 
-            return ForException(result.GetFailure());
+            return responseList;
+        }
+
+        private TransactionTypeResponse BuildResponse(TransactionType transactionType)
+        {
+            return new TransactionTypeResponse(transactionType.Id, transactionType.Name, transactionType.Credit);
         }
     }
 }

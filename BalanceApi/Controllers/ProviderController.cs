@@ -1,7 +1,9 @@
-
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BalanceApi.Model.Domain;
+using BalanceApi.Model.Views.Request;
+using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -29,13 +31,14 @@ namespace BalanceApi.Controllers {
         public IActionResult GetAll()
         {
             var result = _service.GetAll();
-
-            if (result.IsSuccess()) {
-                return Ok(result.GetPayload());
+            if (result.IsSuccess())
+            {
+                var responseView = _buildResponseList(result.GetPayload());
+                return Ok(responseView);
             }
 
             _logger.LogError("Unable to get the providers due: {0}", result.GetFailure());
-            return ForException(result.GetFailure());
+            return ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
@@ -43,19 +46,13 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.GetById(id);
 
-            if (result.IsSuccess())
-            {
-                var provider = result.GetPayload();
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-                if (provider != null)
-                {
-                    return Ok(provider);
-                }
-
-                return NotFound();
-            }
-
-            return ForException(result.GetFailure());
+            var provider = result.GetPayload();
+            if (provider == null) return NotFound();
+            
+            var responseView = _buildResponse(provider);
+            return Ok(responseView);
         }
 
         [HttpGet("country/{country}")]
@@ -63,58 +60,51 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.GetByCountry(country);
 
-            if (result.IsSuccess())
-            {
-                return Ok(result.GetPayload());
-            }
+            if (result.HasErrors()) ForFailure(result.GetFailure());
 
-            return ForException(result.GetFailure());
+            var providers = _buildResponseList(result.GetPayload());
+            return Ok(providers);
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] Provider provider)
+        public IActionResult New([FromBody] AddProvider newProvider)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            var provider = new Provider() { Name = newProvider.Name, Country = newProvider.Country };
             var result = _service.New(provider);
 
-            if (result.IsSuccess())
-            {
-                var p = result.GetPayload();
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var p = result.GetPayload();
+            if (p == null) return BadRequest();
 
-                if(p != null )
-                {
-                    return Created("New provider", p);
-                }
-
-                return BadRequest();
-            }
-
-            return ForException(result.GetFailure());
+            var responseView = _buildResponse(p);
+            return Created("New provider", responseView);
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Provider provider) {
-            var validation = _validator.Validate(provider);
+        public IActionResult Update([FromBody] UpdateProvider updateProvider)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (validation.HasFailed())
+            var provider = new Provider()
             {
-                return BadRequest(validation.GetErrors());
-            }
-
+                Id = updateProvider.Id,
+                Name = updateProvider.Name,
+                Country = updateProvider.Country
+            };
+            
             var r = _service.Update(provider);
 
-            if (r.IsSuccess())
-            {
-                var p = r.GetPayload();
+            if (r.HasErrors()) return ForFailure(r.GetFailure());
 
-                if(p != null)
-                {
-                    return Created("Update Provider", p);
-                }
+            var p = r.GetPayload();
+            if (p == null) return NotFound();
 
-                return NotFound();
-            }
-
-            return ForException(r.GetFailure());
+            var responseView = _buildResponse(p);
+            
+            return Accepted(responseView);
         }
 
         [HttpDelete("{id}")]
@@ -122,19 +112,25 @@ namespace BalanceApi.Controllers {
         {
             var result = _service.Delete(id);
 
-            if (result.IsSuccess())
-            {
-                var rows = result.GetPayload();
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+            
+            var rows = result.GetPayload();
+            if (rows > 0) return Accepted(rows);
 
-                if (rows > 0)
-                {
-                    return Accepted(rows);
-                }
+            return NotFound();
+        }
 
-                return NotFound();
-            }
+        private ICollection<ProviderResponse> _buildResponseList(IEnumerable<Provider> providers)
+        {
+            var responseList = (from provider in providers
+                select new ProviderResponse(provider.Id, provider.Name, provider.Country)).ToList();
 
-            return ForException(result.GetFailure());
+            return responseList;
+        }
+
+        private ProviderResponse _buildResponse(Provider provider)
+        {
+            return new ProviderResponse(provider.Id, provider.Name, provider.Country);
         }
     }
 }

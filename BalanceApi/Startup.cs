@@ -23,9 +23,9 @@ namespace BalanceApi
         {
             // Set up configuration sources.
             var builder = new ConfigurationBuilder()
-                // .SetBasePath(Directory.GetCurrentDirectory()) // Not completely sure if this gonna work on production
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                 .SetBasePath(Directory.GetCurrentDirectory()) // Not completely sure if this gonna work on production
+//                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("AppSettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 ;
 
@@ -50,11 +50,13 @@ namespace BalanceApi
             services.AddSingleton<IAccountTypeDao, AccountTypeDao>();
             services.AddSingleton<IProviderDao, ProviderDao>();
             services.AddSingleton<ITransactionTypeDao, TransactionTypeDao>();
+            services.AddSingleton<IAccountDao, AccountDao>();
 
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
             services.AddSingleton<TransactionTypeService, TransactionTypeService>();
+            services.AddSingleton<AccountService, AccountService>();
 
             // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
