@@ -50,18 +50,19 @@ namespace BalanceApi.Services
             }
         }
 
-        public Result<Exception, List<Provider>> GetByCountry(string country)
+        public Result<Error, List<Provider>> GetByCountry(string country)
         {
             try
             {
                 _logger.LogInformation("Getting provider for country: {0}", country);
                 var providers = _providerDao.GetByCountry(country);
 
-                return Result<Exception, List<Provider>>.ForSuccess(providers);
+                return BuildSuccessResult(providers);
             }
             catch(Exception ex)
             {
-                return Result<Exception, List<Provider>>.ForFailure(ex);
+                _logger.LogError("Can't get providers by country: ", ex);
+                return BuildFailedResult<List<Provider>>("Can't get provider by selected country");
             }
         }
 
