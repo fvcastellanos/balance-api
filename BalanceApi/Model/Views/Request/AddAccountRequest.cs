@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Model.ViewModels
+namespace BalanceApi.Model.Views.Request
 {
     public class AddAccountRequest
     {

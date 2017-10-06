@@ -1,5 +1,5 @@
 using BalanceApi.Model.Domain;
-using BalanceApi.Model.ViewModels;
+using BalanceApi.Model.Views.Request;
 using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;

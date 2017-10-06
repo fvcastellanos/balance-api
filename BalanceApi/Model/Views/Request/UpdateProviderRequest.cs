@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Model.ViewModels
+namespace BalanceApi.Model.Views.Request
 {
-    public class AddProvider
+    public class UpdateProvider
     {
+        [Required]
+        public long Id { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Name { get; set; }

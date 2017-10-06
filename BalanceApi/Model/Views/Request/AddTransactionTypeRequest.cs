@@ -1,18 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BalanceApi.Model.ViewModels
+namespace BalanceApi.Model.Views.Request
 {
-    public class UpdateTransactionTypeRequest
+    public class AddTransactionTypeRequest
     {
-        [Required]
-        public long Id { get; set; }
-        
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
         
         [Required]
         public bool Credit { get; set; }
-        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;
-using BalanceApi.Model.ViewModels;
+using BalanceApi.Model.Views.Request;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

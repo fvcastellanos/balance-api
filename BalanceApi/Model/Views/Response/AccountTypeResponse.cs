@@ -1,4 +1,4 @@
-namespace BalanceApi.Model.ViewModels
+namespace BalanceApi.Model.Views.Response
 {
     public class AccountTypeResponse
     {
