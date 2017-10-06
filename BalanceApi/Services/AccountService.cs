@@ -49,5 +49,27 @@ namespace BalanceApi.Services
             }
         }
 
+        public Result<Error, Account> AddNew(long accountTypeId, long providerId, string name, string number)
+        {
+            try
+            {
+                var account = _accountDao.GetAccount(accountTypeId, providerId, number);
+
+                if (account != null) return BuildFailedResult<Account>("Looks like the account already exists");
+
+                var id = _accountDao.CreateAccount(accountTypeId, providerId, name, number);
+
+                if (id == 0) return BuildFailedResult<Account>("Account was not created");
+
+                var createdAccount = _accountDao.GetById(id);
+                return BuildSuccessResult(createdAccount);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Can't create a new account: ", ex);
+                return BuildFailedResult<Account>("Can't create new account");
+            }
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;
+using BalanceApi.Model.ViewModels;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,17 @@ namespace BalanceApi.Controllers
             if (account == null) return NotFound();
 
             return Ok(account);
+        }
+
+        [HttpPost]
+        public IActionResult AddNew([FromBody] AddAccountRequest addAccountRequest)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = _accountService.AddNew(addAccountRequest.AccountTypeId, addAccountRequest.ProviderId, 
+                addAccountRequest.Name, addAccountRequest.AccountNumber);
+
+            return result.IsSuccess() ? Created("NewAccount", result.GetPayload()) : ForFailure(result.GetFailure());
         }
 
     }
