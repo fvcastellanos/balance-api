@@ -24,7 +24,7 @@ namespace BalanceApi.Model.Data.Dapper
             try 
             {
                 var query = "select a.id, a.account_type_id AccountTypeId, at.name AccountType, a.provider_id ProviderId, p.name Provider, " +
-                    "  a.name, a.account_number AccountNumber, a.balance " +
+                    "  a.name, a.account_number AccountNumber, a.balance, p.country ProviderCountry " +
                     " from account a " +
                     "   inner join account_type at on a.account_type_id = at.id " +
                     "   inner join provider p on a.provider_id = p.id";
@@ -46,7 +46,7 @@ namespace BalanceApi.Model.Data.Dapper
             try 
             {
                 var query = "select a.id, a.account_type_id AccountTypeId, at.name AccountType, a.provider_id ProviderId, p.name Provider, " +
-                    "  a.name, a.account_number AccountNumber, a.balance " +
+                    "  a.name, a.account_number AccountNumber, a.balance, p.country ProviderCountry " +
                     " from account a " +
                     "   inner join account_type at on a.account_type_id = at.id " +
                     "   inner join provider p on a.provider_id = p.id " +
@@ -69,7 +69,7 @@ namespace BalanceApi.Model.Data.Dapper
             try 
             {
                 var query = "select a.id, a.account_type_id AccountTypeId, at.name AccountType, a.provider_id ProviderId, p.name Provider, " +
-                    "  a.name, a.account_number AccountNumber, a.balance " +
+                    "  a.name, a.account_number AccountNumber, a.balance, p.country ProviderCountry " +
                     " from account a " +
                     "   inner join account_type at on a.account_type_id = at.id " +
                     "   inner join provider p on a.provider_id = p.id " +
@@ -92,7 +92,7 @@ namespace BalanceApi.Model.Data.Dapper
             try 
             {
                 var query = "select a.id, a.account_type_id AccountTypeId, at.name AccountType, a.provider_id ProviderId, p.name Provider, " +
-                    "  a.name, a.account_number AccountNumber, a.balance " +
+                    "  a.name, a.account_number AccountNumber, a.balance, p.country ProviderCountry " +
                     " from account a " +
                     "   inner join account_type at on a.account_type_id = at.id " +
                     "   inner join provider p on a.provider_id = p.id " +

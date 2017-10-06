@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;
 using BalanceApi.Model.Views.Request;
+using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,7 +26,11 @@ namespace BalanceApi.Controllers
         public IActionResult GetAll()
         {
             var result = _accountService.GetAll();
-            return result.IsSuccess()? Ok(result.GetPayload()) : ForFailure(result.GetFailure());
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var responseView = BuldResponseList(result.GetPayload());
+            return Ok(responseView);
         }
 
         [HttpGet("{id}")]
@@ -37,7 +43,8 @@ namespace BalanceApi.Controllers
             var account = result.GetPayload();
             if (account == null) return NotFound();
 
-            return Ok(account);
+            var responseView = BuildResponse(account);
+            return Ok(responseView);
         }
 
         [HttpPost]
@@ -48,7 +55,36 @@ namespace BalanceApi.Controllers
             var result = _accountService.AddNew(addAccountRequest.AccountTypeId, addAccountRequest.ProviderId, 
                 addAccountRequest.Name, addAccountRequest.AccountNumber);
 
-            return result.IsSuccess() ? Created("NewAccount", result.GetPayload()) : ForFailure(result.GetFailure());
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var responseView = BuildResponse(result.GetPayload());
+            return Created("NewAccount", responseView);
+        }
+
+        private ICollection<AccountResponse> BuldResponseList(IEnumerable<Account> accounts)
+        {
+            var responseList = (from account in accounts
+                select BuildResponse(account)).ToList();
+
+            return responseList;
+        }
+
+        private AccountResponse BuildResponse(Account account)
+        {
+            var accountType = new AccountTypeResponse(account.AccountTypeId, account.AccountType);
+            var provider = new ProviderResponse(account.ProviderId, account.Provider, account.ProviderCountry);
+
+            var response = new AccountResponse()
+            {
+                Id = account.Id,
+                Name =  account.Name,
+                AccountNumber = account.AccountNumber,
+                Balance = account.Balance,
+                Provider = provider,
+                AccountType = accountType
+            };
+            
+            return response;
         }
 
     }
