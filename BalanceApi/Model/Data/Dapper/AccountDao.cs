@@ -120,13 +120,40 @@ namespace BalanceApi.Model.Data.Dapper
 
                 _logger.LogInformation("Creating account [number: {0}, type_id: {1}, provider_id: {2}, name: {3}", accountNumber, accountTypeId, providerId, name);
                 var rows = GetConnection().Execute(query, new { AccountNumber = accountNumber, AccountTypeId = accountTypeId, ProviderId = providerId, Name = name });
-                if (rows > 0) return GetLasInsertedId();
-
-                return 0;
+                
+                return rows > 0 ? GetLasInsertedId() : 0;
             }
             catch(Exception ex)
             {
                 _logger.LogError("Can't insert new account DB", ex);
+                throw;
+            }
+        }
+
+        public Account Update(Account account)
+        {
+            try
+            {
+                var query =
+                    "update account set account_type_id = @AccountTypeId, provider_id = @ProviderId, name = @Name, " +
+                    " account_number = @AccountNumber where id = @Id";
+                
+                _logger.LogInformation("Update account: [number: {0}, type_id: {1}, provider_id: {2}, name: {3}", account.AccountNumber, 
+                    account.AccountTypeId, account.ProviderId, account.Name);
+                var rows = GetConnection().Execute(query, new
+                {
+                    AccountTypeId = account.AccountTypeId, 
+                    ProviderId = account.ProviderId,
+                    Name = account.Name,
+                    AccountNumber = account.AccountNumber,
+                    Id = account.Id
+                });
+
+                return rows > 0 ? GetById(account.Id) : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Can't update account", ex);
                 throw;
             }
         }

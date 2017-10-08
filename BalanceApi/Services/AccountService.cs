@@ -89,9 +89,15 @@ namespace BalanceApi.Services
                     return BuildFailedResult<Account>("Account not found");
                 }
 
-                if (!ProvierExists(account.ProviderId));
+                if (!ProvierExists(account.ProviderId)) return BuildFailedResult<Account>("Provider not found");
 
+                if (!AccountTypeExists(account.AccountTypeId))
+                    return BuildFailedResult<Account>("Account type not found");
+                
+                _logger.LogInformation("Updating account: {0} - {1}", account.Id, account.Name);
+                var updatedAccount = _accountDao.Update(account);
 
+                return updatedAccount != null ? BuildSuccessResult(updatedAccount) : BuildFailedResult<Account>("Account not updated");
             }
             catch (Exception ex)
             {
@@ -104,13 +110,25 @@ namespace BalanceApi.Services
         {
             _logger.LogInformation("Getting provider: {0}", id);
             var provider = _providerDao.GetById(id);
-            if (provider == null) {
-                _logger.LogError("Provider {0} not found", id);
-                return false;
-            }
-
-            return true;
+            
+            if (provider != null) return true;
+            
+            _logger.LogError("Provider {0} not found", id);
+            return false;
         }
+
+        private bool AccountTypeExists(long id)
+        {
+            _logger.LogInformation("Getting account type: {0}", id);
+            var accountType = _accountTypeDao.FindById(id);
+
+            if (accountType != null) return true;
+            
+            _logger.LogError("Account type {0} not found", id);
+            return false;
+        }
+        
+        
 
 
     }

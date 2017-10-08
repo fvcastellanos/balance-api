@@ -11,5 +11,6 @@ namespace BalanceApi.Model.Data
         Account GetByAccountNumber(string number);
         Account GetAccount(long accountTypeId, long providerId, string accountNumber);
         long CreateAccount(long accountTypeId, long providerId, string name, string accountNumber);
+        Account Update(Account account);
     }
 }
