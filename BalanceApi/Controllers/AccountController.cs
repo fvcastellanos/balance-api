@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BalanceApi.Model.Data;
 using BalanceApi.Model.Domain;
 using BalanceApi.Model.Views.Request;
 using BalanceApi.Model.Views.Response;
@@ -61,6 +60,20 @@ namespace BalanceApi.Controllers
             return Created("NewAccount", responseView);
         }
 
+        [HttpPut]
+        public IActionResult Update([FromBody] UpdateAccountRequest updateAccountRequest)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var account = BuildAccount(updateAccountRequest);
+            var result = _accountService.Update(account);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var responseView = BuildResponse(result.GetPayload());
+            return Ok(responseView);
+        }
+
         private ICollection<AccountResponse> BuldResponseList(IEnumerable<Account> accounts)
         {
             var responseList = (from account in accounts
@@ -69,6 +82,18 @@ namespace BalanceApi.Controllers
             return responseList;
         }
 
+        private Account BuildAccount(UpdateAccountRequest updateAccountRequest)
+        {
+            return new Account()
+            {
+                Id = updateAccountRequest.Id,
+                AccountTypeId = updateAccountRequest.AccountTypeId,
+                ProviderId = updateAccountRequest.ProviderId,
+                AccountNumber = updateAccountRequest.AccountNumber,
+                Name = updateAccountRequest.Name
+            };
+        }
+        
         private AccountResponse BuildResponse(Account account)
         {
             var accountType = new AccountTypeResponse(account.AccountTypeId, account.AccountType);

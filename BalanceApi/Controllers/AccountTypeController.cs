@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BalanceApi.Model.Domain;
 using BalanceApi.Model.Views.Request;
