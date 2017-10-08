@@ -61,6 +61,16 @@ namespace BalanceApi.Controllers
             return Created("NewAccount", responseView);
         }
 
+        [HttpPut]
+        public IActionResult Update([FromBody] UpdateAccountRequest updateAccountRequest)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            
+
+            return null;
+        }
+
         private ICollection<AccountResponse> BuldResponseList(IEnumerable<Account> accounts)
         {
             var responseList = (from account in accounts
