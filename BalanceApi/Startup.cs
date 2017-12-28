@@ -70,6 +70,7 @@ namespace BalanceApi
             loggerFactory.AddDebug();
 
             app.UseMvc();
+            app.UseStaticFiles();
             // app.UseSwagger();
             // app.UseSwaggerUi();
         }

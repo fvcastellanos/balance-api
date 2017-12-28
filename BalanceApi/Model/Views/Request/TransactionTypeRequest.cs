@@ -2,7 +2,7 @@
 
 namespace BalanceApi.Model.Views.Request
 {
-    public class AddTransactionTypeRequest
+    public class TransactionTypeRequest
     {
         [Required]
         [StringLength(100)]

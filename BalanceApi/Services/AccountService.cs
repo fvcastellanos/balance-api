@@ -29,12 +29,12 @@ namespace BalanceApi.Services
                 _logger.LogInformation("Getting accounts");
                 var accounts = _accountDao.GetAll();
 
-                return BuildSuccessResult(accounts);
+                return Result<Error, ICollection<Account>>.ForSuccess(accounts);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Can't get accounts", ex);
-                return BuildFailedResult<ICollection<Account>>("Can't get accounts");
+                return Result<Error, ICollection<Account>>.ForFailure(BuildError("Can't get accounts"));
             }
         }
 
@@ -43,14 +43,16 @@ namespace BalanceApi.Services
             try 
             {
                 _logger.LogInformation("Getting account using id: {0}", id);
-                var account = _accountDao.GetById(id);
+                var accountHolder = _accountDao.GetById(id);
+                
+                if (!accountHolder.HasValue) return Result<Error, Account>.ForFailure(BuildError("Account not found"));
 
-                return BuildSuccessResult(account);
+                return Result<Error, Account>.ForSuccess(accountHolder.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Can't get account by id: {0}", id, ex);
-                return BuildFailedResult<Account>("Can't get account");
+                return Result<Error, Account>.ForFailure(BuildError("Can't get account"));
             }
         }
 
@@ -58,21 +60,19 @@ namespace BalanceApi.Services
         {
             try
             {
-                var account = _accountDao.GetAccount(accountTypeId, providerId, number);
+                var accountHolder = _accountDao.GetAccount(accountTypeId, providerId, number);
 
-                if (account != null) return BuildFailedResult<Account>("Looks like the account already exists");
+                if (accountHolder.HasValue) return Result<Error, Account>.ForFailure(BuildError("Looks like the account already exists"));
 
                 var id = _accountDao.CreateAccount(accountTypeId, providerId, name, number);
 
-                if (id == 0) return BuildFailedResult<Account>("Account was not created");
-
-                var createdAccount = _accountDao.GetById(id);
-                return BuildSuccessResult(createdAccount);
+                var createdAccount = _accountDao.GetById(id).Value;
+                return Result<Error, Account>.ForSuccess(createdAccount);
             }
             catch(Exception ex)
             {
                 _logger.LogError("Can't create a new account: ", ex);
-                return BuildFailedResult<Account>("Can't create new account");
+                return Result<Error, Account>.ForFailure(BuildError("Can't create new account"));
             }
         }
 
@@ -81,55 +81,45 @@ namespace BalanceApi.Services
             try 
             {
                 _logger.LogInformation("Getting account: {0] - {1}", account.Id, account.AccountNumber);
-                var storedAccount = _accountDao.GetById(account.Id);
+                var storedAccountHolder = _accountDao.GetById(account.Id);
 
-                if (storedAccount == null) 
+                if (storedAccountHolder.HasValue) 
                 {
                     _logger.LogError("Getting account: {0] - {1} not found", account.Id, account.AccountNumber);
-                    return BuildFailedResult<Account>("Account not found");
+                    return Result<Error, Account>.ForFailure(BuildError("Account not found"));
                 }
 
-                if (!ProvierExists(account.ProviderId)) return BuildFailedResult<Account>("Provider not found");
+                if (!ProvierExist(account.ProviderId)) return Result<Error, Account>.ForFailure(BuildError("Provider not found"));
 
-                if (!AccountTypeExists(account.AccountTypeId))
-                    return BuildFailedResult<Account>("Account type not found");
+                if (!AccountTypeExist(account.AccountTypeId))
+                    return Result<Error, Account>.ForFailure(BuildError("Account type not found"));
                 
                 _logger.LogInformation("Updating account: {0} - {1}", account.Id, account.Name);
-                var updatedAccount = _accountDao.Update(account);
+                _accountDao.Update(account);
 
-                return updatedAccount != null ? BuildSuccessResult(updatedAccount) : BuildFailedResult<Account>("Account not updated");
+                return Result<Error, Account>.ForSuccess(account);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Can't update account: {0}", account.Id, ex);
-                return BuildFailedResult<Account>("Can't update account");
+                return Result<Error, Account>.ForFailure(BuildError("Can't update account"));
             }
         }
 
-        private bool ProvierExists(long id)
+        private bool ProvierExist(long id)
         {
             _logger.LogInformation("Getting provider: {0}", id);
-            var provider = _providerDao.GetById(id);
-            
-            if (provider != null) return true;
-            
-            _logger.LogError("Provider {0} not found", id);
-            return false;
+            var providerHolder = _providerDao.GetById(id);
+
+            return providerHolder.HasValue;
         }
 
-        private bool AccountTypeExists(long id)
+        private bool AccountTypeExist(long id)
         {
             _logger.LogInformation("Getting account type: {0}", id);
-            var accountType = _accountTypeDao.FindById(id);
+            var accountTypeHolder = _accountTypeDao.FindById(id);
 
-            if (accountType != null) return true;
-            
-            _logger.LogError("Account type {0} not found", id);
-            return false;
+            return accountTypeHolder.HasValue;
         }
-        
-        
-
-
     }
 }

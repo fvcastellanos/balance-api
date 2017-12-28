@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace BalanceApi.Model.Views.Request
 {
-    public class UpdateAccountRequest
+    public class AccountRequest
     {
-        [Required]
-        public long Id { get; set; }
-
         [Required]
         public long AccountTypeId { get; set; }
 
@@ -20,6 +17,5 @@ namespace BalanceApi.Model.Views.Request
         [Required]
         [StringLength(100)]
         public string AccountNumber { get; set; }
-        
     }
 }

@@ -1,10 +1,10 @@
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using BalanceApi.Domain;
 using BalanceApi.Model.Domain;
 using Dapper;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -28,22 +28,34 @@ namespace BalanceApi.Model.Data.Dapper {
 
         public List<Provider> GetAll()
         {
-            return GetConnection().Query<Provider>(GET_ALL).AsList();
+            using (var db = GetConnection())
+            {
+                return db.Query<Provider>(GET_ALL).AsList();    
+            }
         }
 
         public List<Provider> GetByCountry(string country)
         {
-            return GetConnection().Query<Provider>(GET_BY_COUNTRY, new { Country = country }).AsList();
+            using (var db = GetConnection())
+            {
+                return db.Query<Provider>(GET_BY_COUNTRY, new { Country = country }).AsList();                
+            }
         }
 
-        public Provider GetById(long id)
+        public Optional<Provider> GetById(long id)
         {
-            return GetConnection().Query<Provider>(GET_BY_ID, new { Id = id }).SingleOrDefault();
+            using (var db = GetConnection())
+            {
+                return new Optional<Provider>(db.Query<Provider>(GET_BY_ID, new { Id = id }).SingleOrDefault());                
+            }
         }
 
-        public Provider FindProvider(string name, string country)
+        public Optional<Provider> FindProvider(string name, string country)
         {
-            return GetConnection().Query<Provider>(FIND_PROVIDER, new { Name = name, Country = country }).SingleOrDefault();
+            using (var db = GetConnection())
+            {
+                return new Optional<Provider>(db.Query<Provider>(FIND_PROVIDER, new { Name = name, Country = country }).SingleOrDefault());                
+            }
         }
 
         public long New(string name, string country) {
@@ -64,7 +76,7 @@ namespace BalanceApi.Model.Data.Dapper {
         public Provider Update(Provider provider) {
             GetConnection().Execute("update provider set name = @Name, country = @Country where id = @Id",
                 new {provider.Name, provider.Country, provider.Id });
-            return GetById(provider.Id);
+            return GetById(provider.Id).Value;
         }
     }
 }

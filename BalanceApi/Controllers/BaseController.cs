@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System;
+using BalanceApi.Model.Views.Response;
 
 namespace BalanceApi.Controllers
 {
@@ -20,6 +21,15 @@ namespace BalanceApi.Controllers
         {
             // Unprocessable entity
             return StatusCode(422, failure);
-        }        
+        }
+
+        protected string BuildResourceUri(string resource, long id)
+        {
+            var host = HttpContext.Request.Host.Value;
+            var http = HttpContext.Request.IsHttps ? "https" : "http";
+            var uri = http + "://" + host + resource + "/" + id;
+
+            return uri;
+        }
     }
 }

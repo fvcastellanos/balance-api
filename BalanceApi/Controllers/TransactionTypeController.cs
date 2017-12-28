@@ -7,10 +7,11 @@ using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static BalanceApi.Controllers.Routes;
 
 namespace BalanceApi.Controllers 
 {
-    [Route("/api/transaction-type")]
+    [Route(TransactionTypes)]
     public class TransactionTypeController : BaseController
     {
         private readonly ILogger _logger;
@@ -33,6 +34,7 @@ namespace BalanceApi.Controllers
             if (result.HasErrors()) return ForFailure(result.GetFailure());
 
             var responseView = BuildResponseList(result.GetPayload());
+
             return Ok(responseView);
         }
 
@@ -51,7 +53,7 @@ namespace BalanceApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] AddTransactionTypeRequest transactionTypeRequest)
+        public IActionResult New([FromBody] TransactionTypeRequest transactionTypeRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -60,27 +62,27 @@ namespace BalanceApi.Controllers
 
             if (result.HasErrors()) ForFailure(result.GetFailure());
 
-            var responseView = BuildResponse(result.GetPayload());
-            return Created("NewTransactionType", responseView);
+            var payload = BuildResponse(result.GetPayload());
+            var uri = BuildResourceUri(TransactionTypes, payload.Id);
+
+            return Created(uri, payload);
         }
 
-        [HttpPut]
-        public IActionResult Update([FromBody] UpdateTransactionTypeRequest transactionTypeRequest)
+        [HttpPut("{id}")]
+        public IActionResult Update(long id, [FromBody] TransactionTypeRequest transactionTypeRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var transactionType = new TransactionType()
             {
-                Id = transactionTypeRequest.Id,
+                Id = id,
                 Name = transactionTypeRequest.Name,
                 Credit = transactionTypeRequest.Credit
             };
             
             var result = _transactionTypeService.Update(transactionType);
-            if (result.HasErrors()) return ForFailure(result.GetFailure());
 
-            var responseView = BuildResponse(result.GetPayload());
-            return Accepted(responseView);
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok();
         }
 
         [HttpDelete("{id}")]
@@ -91,7 +93,7 @@ namespace BalanceApi.Controllers
             if (result.HasErrors()) return ForFailure(result.GetFailure());
 
             var rows = result.GetPayload();
-            if (rows > 0) return Accepted(rows);
+            if (rows > 0) return NoContent();
 
             return NotFound();
         }
