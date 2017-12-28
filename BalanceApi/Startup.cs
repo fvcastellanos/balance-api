@@ -51,12 +51,14 @@ namespace BalanceApi
             services.AddSingleton<IProviderDao, ProviderDao>();
             services.AddSingleton<ITransactionTypeDao, TransactionTypeDao>();
             services.AddSingleton<IAccountDao, AccountDao>();
+            services.AddSingleton<ITransactionDao, TransactionDao>();
 
             // Application services
             services.AddSingleton<AccountTypeService, AccountTypeService>();
             services.AddSingleton<ProviderService, ProviderService>();
             services.AddSingleton<TransactionTypeService, TransactionTypeService>();
             services.AddSingleton<AccountService, AccountService>();
+            services.AddSingleton<TransactionService, TransactionService>();
 
             // Validation services
             services.AddSingleton<IModelValidator<Provider>, ProviderValidator>();
@@ -71,6 +73,7 @@ namespace BalanceApi
 
             app.UseMvc();
             app.UseStaticFiles();
+
             // app.UseSwagger();
             // app.UseSwaggerUi();
         }

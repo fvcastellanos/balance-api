@@ -10,5 +10,6 @@
         public const string AccountTypes = Root + "/account-types";
         public const string Providers = Root + "/providers";
         public const string TransactionTypes = Root + "/transaction-types";
+        public const string Transactions = Root + "/transactions";
     }
 }
