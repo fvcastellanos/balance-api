@@ -39,9 +39,15 @@ namespace BalanceApi.Services
             try
             {
                 _logger.LogInformation("Getting provider with id: {0}", id);
-                var provider = _providerDao.GetById(id);
+                var providerHolder = _providerDao.GetById(id);
 
-                return Result<Error, Provider>.ForSuccess(provider);
+                if (!providerHolder.HasValue)
+                {
+                    _logger.LogInformation("Provider with id: {0} not found", id);
+                    return Result<Error, Provider>.ForFailure(BuildError("Provider Not Found"));
+                }
+                    
+                return Result<Error, Provider>.ForSuccess(providerHolder.Value);
             }
             catch (Exception ex)
             {
@@ -57,23 +63,30 @@ namespace BalanceApi.Services
                 _logger.LogInformation("Getting provider for country: {0}", country);
                 var providers = _providerDao.GetByCountry(country);
 
-                return BuildSuccessResult(providers);
+                return Result<Error, List<Provider>>.ForSuccess(providers);
             }
             catch(Exception ex)
             {
                 _logger.LogError("Can't get providers by country: ", ex);
-                return BuildFailedResult<List<Provider>>("Can't get provider by selected country");
+                return Result<Error, List<Provider>>.ForFailure(BuildError("Can't get provider by selected country"));
             }
         }
 
         public Result<Error, Provider> New(Provider provider) {
             try
             {
+                var providerHolder = _providerDao.FindProvider(provider.Name, provider.Country);
+                if (providerHolder.HasValue)
+                {
+                    _logger.LogError("Provider: {0} - {1} already exists", provider.Name, provider.Country);
+                    return Result<Error, Provider>.ForFailure(BuildError("Provider already exists"));
+                }
+                
                 _logger.LogInformation("Adding a new provider with name: {0} and country: {1}", provider.Name, provider.Country);
                 var id = _providerDao.New(provider.Name, provider.Country);
-                var newProvider = _providerDao.GetById(id);
+                var newProviderHolder = _providerDao.GetById(id);
 
-                return Result<Error, Provider>.ForSuccess(newProvider);
+                return Result<Error, Provider>.ForSuccess(newProviderHolder.Value);
             }
             catch(Exception ex)
             {
@@ -82,36 +95,59 @@ namespace BalanceApi.Services
             }
         }
 
-        public Result<Exception, int> Delete(long id)
+        public Result<Error, int> Delete(long id)
         {
             try
             {
+                if (!ProviderExists(id))
+                {
+                    _logger.LogError("Provider with id: {0} not found", id);
+                    return Result<Error, int>.ForFailure(BuildError("Provider not found"));
+                }
+                
                 _logger.LogInformation("Deleting provider with id {0}", id);
                 var rows = _providerDao.Delete(id);
                 _logger.LogInformation("Provider with id {0} deleted", id);
 
-                return Result<Exception, int>.ForSuccess(rows);
+                return Result<Error, int>.ForSuccess(rows);
             }
             catch(Exception ex)
             {
-                return Result<Exception, int>.ForFailure(ex);
+                _logger.LogError("Can't delete provider: {0}", ex.StackTrace);
+                return Result<Error, int>.ForFailure(BuildError("Can't delete provider"));
             }
         }
 
-        public Result<Exception, Provider> Update(Provider provider)
+        public Result<Error, Provider> Update(Provider provider)
         {
             try
             {
+                if (!ProviderExists(provider.Id))
+                {
+                    _logger.LogError("Provider with id: {0} not found", provider.Id);
+                    return Result<Error, Provider>.ForFailure(BuildError("Provider not found"));
+                    
+                }
+
                 _logger.LogInformation("Trying to update provider with id: {0}", provider.Id);
                 var p = _providerDao.Update(provider);
                 _logger.LogInformation("Provider udpated");
 
-                return Result<Exception, Provider>.ForSuccess(p);
+                return Result<Error, Provider>.ForSuccess(p);
             }
             catch(Exception ex)
             {
-                return Result<Exception, Provider>.ForFailure(ex);
+                _logger.LogError("Can't update provider: {0}", ex.StackTrace);
+                return Result<Error, Provider>.ForFailure(BuildError("Can't update provider"));
             }
         }
+
+        private bool ProviderExists(long id)
+        {
+            var providerHolder = _providerDao.GetById(id);
+
+            return providerHolder.HasValue;
+        }
+        
     }
 }

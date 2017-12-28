@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BalanceApi.Controllers
 {
-    [Route("/")]
+    // [Route("/")]
     public class SwaggerController : Controller
     {
         [HttpGet]

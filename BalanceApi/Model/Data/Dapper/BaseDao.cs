@@ -10,25 +10,26 @@ namespace BalanceApi.Model.Data.Dapper
 {
     public abstract class BaseDao
     {
-        protected static string LastInsertId = "select LAST_INSERT_ID()";
+        private const string LastInsertId = "select LAST_INSERT_ID()";
 
-        protected AppSettings Settings { get; }
+        private AppSettings Settings { get; }
 
-        protected ILogger Logger; 
+        private readonly ILogger _logger; 
+        
         protected BaseDao(IOptions<AppSettings> appSettings, ILogger logger)
         {
             Settings = appSettings.Value;
-            Logger = logger;
+            _logger = logger;
         }
         
         protected IDbConnection GetConnection()
         {
-            Logger.LogInformation("Getting DB connection");
+            _logger.LogInformation("Getting DB connection");
             return new MySqlConnection(Settings.ConnectionString);
         }
 
         protected long GetLasInsertedId() {
-            Logger.LogInformation("Getting last inserted Id");
+            _logger.LogInformation("Getting last inserted Id");
             return GetConnection().Query<long>(LastInsertId).Single();
         }
     }

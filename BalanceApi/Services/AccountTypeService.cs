@@ -39,9 +39,11 @@ namespace BalanceApi.Services
             try
             {
                 _logger.LogInformation("Getting Account Type for id: {0}", id);
-                var accountType = _accountTypeDao.FindById(id);
+                var accountTypeHolder = _accountTypeDao.FindById(id);
+                
+                if (!accountTypeHolder.HasValue) return Result<Error, AccountType>.ForFailure(BuildError("Account type not found"));
 
-                return Result<Error, AccountType>.ForSuccess(accountType);
+                return Result<Error, AccountType>.ForSuccess(accountTypeHolder.Value);
             } catch(Exception ex)
             {
                 _logger.LogError("Unable to get the account type: {0}, due: {1}", id, ex);

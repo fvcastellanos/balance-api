@@ -2,17 +2,14 @@
 
 namespace BalanceApi.Model.Views.Request
 {
-    public class UpdateTransactionTypeRequest
+    public class ProviderRequest
     {
-        [Required]
-        public long Id { get; set; }
-        
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
         
         [Required]
-        public bool Credit { get; set; }
-        
+        [StringLength(2)]
+        public string Country { get; set; }
     }
 }

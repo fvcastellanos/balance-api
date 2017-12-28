@@ -6,10 +6,11 @@ using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static BalanceApi.Controllers.Routes;
 
 namespace BalanceApi.Controllers
 {
-    [Route(template: "api/account")]
+    [Route(Accounts)]
     public class AccountController : BaseController
     {
         private readonly AccountService _accountService;
@@ -47,34 +48,32 @@ namespace BalanceApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew([FromBody] AddAccountRequest addAccountRequest)
+        public IActionResult AddNew([FromBody] AccountRequest accountRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = _accountService.AddNew(addAccountRequest.AccountTypeId, addAccountRequest.ProviderId, 
-                addAccountRequest.Name, addAccountRequest.AccountNumber);
+            var result = _accountService.AddNew(accountRequest.AccountTypeId, accountRequest.ProviderId, 
+                accountRequest.Name, accountRequest.AccountNumber);
 
             if (result.HasErrors()) return ForFailure(result.GetFailure());
 
             var responseView = BuildResponse(result.GetPayload());
-            return Created("NewAccount", responseView);
+            var uri = BuildResourceUri(Accounts, responseView.Id);
+            return Created(uri, responseView);
         }
 
-        [HttpPut]
-        public IActionResult Update([FromBody] UpdateAccountRequest updateAccountRequest)
+        [HttpPut("{id}")]
+        public IActionResult Update(long id, [FromBody] AccountRequest accountRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var account = BuildAccount(updateAccountRequest);
+            var account = BuildAccount(id, accountRequest);
             var result = _accountService.Update(account);
 
-            if (result.HasErrors()) return ForFailure(result.GetFailure());
-
-            var responseView = BuildResponse(result.GetPayload());
-            return Ok(responseView);
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok();
         }
 
-        private ICollection<AccountResponse> BuldResponseList(IEnumerable<Account> accounts)
+        private static ICollection<AccountResponse> BuldResponseList(IEnumerable<Account> accounts)
         {
             var responseList = (from account in accounts
                 select BuildResponse(account)).ToList();
@@ -82,19 +81,19 @@ namespace BalanceApi.Controllers
             return responseList;
         }
 
-        private Account BuildAccount(UpdateAccountRequest updateAccountRequest)
+        private static Account BuildAccount(long id, AccountRequest accountRequest)
         {
             return new Account()
             {
-                Id = updateAccountRequest.Id,
-                AccountTypeId = updateAccountRequest.AccountTypeId,
-                ProviderId = updateAccountRequest.ProviderId,
-                AccountNumber = updateAccountRequest.AccountNumber,
-                Name = updateAccountRequest.Name
+                Id = id,
+                AccountTypeId = accountRequest.AccountTypeId,
+                ProviderId = accountRequest.ProviderId,
+                AccountNumber = accountRequest.AccountNumber,
+                Name = accountRequest.Name
             };
         }
         
-        private AccountResponse BuildResponse(Account account)
+        private static AccountResponse BuildResponse(Account account)
         {
             var accountType = new AccountTypeResponse(account.AccountTypeId, account.AccountType);
             var provider = new ProviderResponse(account.ProviderId, account.Provider, account.ProviderCountry);

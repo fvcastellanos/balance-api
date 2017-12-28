@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Dapper;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace BalanceApi.Model.Data.Dapper
 {
@@ -41,7 +42,7 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public Account GetById(long id)
+        public Optional<Account> GetById(long id)
         {
             try 
             {
@@ -55,7 +56,7 @@ namespace BalanceApi.Model.Data.Dapper
                 _logger.LogInformation("Getting account with id: {0}", id);
                 var account = GetConnection().Query<Account>(query, new { Id = id }).SingleOrDefault<Account>();
 
-                return account;
+                return new Optional<Account>(account);
             }
             catch(Exception ex)
             {
@@ -64,7 +65,7 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public Account GetByAccountNumber(string number)
+        public Optional<Account> GetByAccountNumber(string number)
         {
             try 
             {
@@ -78,7 +79,7 @@ namespace BalanceApi.Model.Data.Dapper
                 _logger.LogInformation("Getting account with number: {0}", number);
                 var account = GetConnection().Query<Account>(query, new { Number = number }).SingleOrDefault<Account>();
 
-                return account;
+                return new Optional<Account>(account);
             }
             catch(Exception ex)
             {
@@ -87,7 +88,7 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public Account GetAccount(long accountTypeId, long providerId, string accountNumber)
+        public Optional<Account> GetAccount(long accountTypeId, long providerId, string accountNumber)
         {
             try 
             {
@@ -102,7 +103,7 @@ namespace BalanceApi.Model.Data.Dapper
                 var account = GetConnection().Query<Account>(query, new { Number = accountNumber, AccountTypeId = accountTypeId, ProviderId = providerId })
                         .SingleOrDefault<Account>();
 
-                return account;
+                return new Optional<Account>(account);
             }
             catch(Exception ex)
             {
@@ -130,7 +131,7 @@ namespace BalanceApi.Model.Data.Dapper
             }
         }
 
-        public Account Update(Account account)
+        public void Update(Account account)
         {
             try
             {
@@ -140,7 +141,8 @@ namespace BalanceApi.Model.Data.Dapper
                 
                 _logger.LogInformation("Update account: [number: {0}, type_id: {1}, provider_id: {2}, name: {3}", account.AccountNumber, 
                     account.AccountTypeId, account.ProviderId, account.Name);
-                var rows = GetConnection().Execute(query, new
+
+                GetConnection().Execute(query, new
                 {
                     AccountTypeId = account.AccountTypeId, 
                     ProviderId = account.ProviderId,
@@ -149,7 +151,6 @@ namespace BalanceApi.Model.Data.Dapper
                     Id = account.Id
                 });
 
-                return rows > 0 ? GetById(account.Id) : null;
             }
             catch (Exception ex)
             {

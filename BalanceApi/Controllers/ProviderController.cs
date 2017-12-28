@@ -8,23 +8,20 @@ using BalanceApi.Services;
 using BalanceApi.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static BalanceApi.Controllers.Routes;
 
 namespace BalanceApi.Controllers {
 
-    [Route("/api/provider")]
+    [Route(Providers)]
     public class ProviderController: BaseController {
 
         private readonly ILogger _logger;
         private readonly ProviderService _service;
 
-        private readonly IModelValidator<Provider> _validator;
-
-        public ProviderController(ILogger<ProviderController> logger, ProviderService service,
-            IModelValidator<Provider> validator)
+        public ProviderController(ILogger<ProviderController> logger, ProviderService service)
         {
             _service = service;
             _logger = logger;
-            _validator = validator;
         }
 
         [HttpGet]
@@ -33,7 +30,7 @@ namespace BalanceApi.Controllers {
             var result = _service.GetAll();
             if (result.IsSuccess())
             {
-                var responseView = _buildResponseList(result.GetPayload());
+                var responseView = BuildResponseList(result.GetPayload());
                 return Ok(responseView);
             }
 
@@ -51,7 +48,7 @@ namespace BalanceApi.Controllers {
             var provider = result.GetPayload();
             if (provider == null) return NotFound();
             
-            var responseView = _buildResponse(provider);
+            var responseView = BuildResponse(provider);
             return Ok(responseView);
         }
 
@@ -62,49 +59,42 @@ namespace BalanceApi.Controllers {
 
             if (result.HasErrors()) ForFailure(result.GetFailure());
 
-            var providers = _buildResponseList(result.GetPayload());
+            var providers = BuildResponseList(result.GetPayload());
             return Ok(providers);
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] AddProvider newProvider)
+        public IActionResult New([FromBody] ProviderRequest providerRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             
-            var provider = new Provider() { Name = newProvider.Name, Country = newProvider.Country };
+            var provider = new Provider() { Name = providerRequest.Name, Country = providerRequest.Country };
             var result = _service.New(provider);
 
             if (result.HasErrors()) return ForFailure(result.GetFailure());
             
             var p = result.GetPayload();
-            if (p == null) return BadRequest();
-
-            var responseView = _buildResponse(p);
-            return Created("New provider", responseView);
+            var responseView = BuildResponse(p);
+            var uri = BuildResourceUri(Providers, p.Id);
+            
+            return Created(uri, responseView);
         }
 
-        [HttpPut]
-        public IActionResult Update([FromBody] UpdateProvider updateProvider)
+        [HttpPut("{id}")]
+        public IActionResult Update(long id, [FromBody] ProviderRequest providerRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var provider = new Provider()
             {
-                Id = updateProvider.Id,
-                Name = updateProvider.Name,
-                Country = updateProvider.Country
+                Id = id,
+                Name = providerRequest.Name,
+                Country = providerRequest.Country
             };
             
-            var r = _service.Update(provider);
+            var result = _service.Update(provider);
 
-            if (r.HasErrors()) return ForFailure(r.GetFailure());
-
-            var p = r.GetPayload();
-            if (p == null) return NotFound();
-
-            var responseView = _buildResponse(p);
-            
-            return Accepted(responseView);
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok();
         }
 
         [HttpDelete("{id}")]
@@ -120,7 +110,7 @@ namespace BalanceApi.Controllers {
             return NotFound();
         }
 
-        private ICollection<ProviderResponse> _buildResponseList(IEnumerable<Provider> providers)
+        private ICollection<ProviderResponse> BuildResponseList(IEnumerable<Provider> providers)
         {
             var responseList = (from provider in providers
                 select new ProviderResponse(provider.Id, provider.Name, provider.Country)).ToList();
@@ -128,7 +118,7 @@ namespace BalanceApi.Controllers {
             return responseList;
         }
 
-        private ProviderResponse _buildResponse(Provider provider)
+        private ProviderResponse BuildResponse(Provider provider)
         {
             return new ProviderResponse(provider.Id, provider.Name, provider.Country);
         }

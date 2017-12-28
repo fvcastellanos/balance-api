@@ -6,12 +6,12 @@ using BalanceApi.Model.Views.Response;
 using BalanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using static BalanceApi.Controllers.Routes;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 namespace BalanceApi.Controllers
 {
-    [Route("api/account-type")]
+    [Route(AccountTypes)]
     public class AccountTypeController : BaseController
     {
         private ILogger<AccountTypeController> _logger;
@@ -28,11 +28,12 @@ namespace BalanceApi.Controllers
         public IActionResult GetAll()
         {
             var result = _service.GetAccountTypes();
-            return result.IsSuccess() ? Ok(_buildResponseList(result.GetPayload())) : ForFailure(result.GetFailure());
+            return result.IsSuccess() ? Ok(BuildResponseList(result.GetPayload())) : ForFailure(result.GetFailure());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(long id) {
+        public IActionResult GetById(long id)
+        {
             var result = _service.GetAccountTypeById(id);
 
             if (result.HasErrors()) return ForFailure(result.GetFailure());
@@ -42,56 +43,51 @@ namespace BalanceApi.Controllers
             if(accountType == null)
                 return NotFound();
             
-            return Ok(_buildResponse(accountType));
+            return Ok(BuildResponse(accountType));
         }
 
         [HttpPost]
-        public IActionResult New([FromBody] AddAccountType accountType) {
-
-            if (!ModelState.IsValid) 
-                return BadRequest(ModelState);
-            
-            var result = _service.NewAccountType(accountType.Name);
-            
-            if(result.IsSuccess()) {
-                var item = result.GetPayload();
-                
-                if(item != null) {
-                    return Created("NewAccountType", _buildResponse(item));
-                } else {
-                    return BadRequest();
-                }
-            } else {
-                return ForFailure(result.GetFailure());
-            }
-        }
-
-        [HttpPut]
-        public IActionResult Update([FromBody] UpdateAccountType updateAccountType)
+        public IActionResult New([FromBody] AccountTypeRequest accountTypeRequest)
         {
-
             if (!ModelState.IsValid) return BadRequest(ModelState);
             
-            var accountType = new AccountType(updateAccountType.Id, updateAccountType.Name);
+            var result = _service.NewAccountType(accountTypeRequest.Name);
+
+            if (result.HasErrors()) return ForFailure(result.GetFailure());
+
+            var item = BuildResponse(result.GetPayload());
+            var uri = BuildResourceUri(AccountTypes, item.Id);
+            
+            return Created(uri, item);
+
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(long id, [FromBody] AccountTypeRequest accountTypeRequest)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            var accountType = new AccountType(id, accountTypeRequest.Name);
             var result = _service.UpdateAccountType(accountType);
 
-            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok(_buildResponse(result.GetPayload()));
+            return result.HasErrors() ? ForFailure(result.GetFailure()) : Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id) {
+        public IActionResult Delete(long id)
+        {
             var result = _service.DeleteAccountType(id);
 
             if (result.HasErrors()) return ForFailure(result.GetFailure());
             
             var rows = result.GetPayload();
             
-            if(rows > 0) return Accepted(rows);
+            if(rows > 0) return NoContent();
 
             return NotFound();
         }
 
-        private ICollection<AccountTypeResponse> _buildResponseList(ICollection<AccountType> accountTypes)
+        private ICollection<AccountTypeResponse> BuildResponseList(IEnumerable<AccountType> accountTypes)
         {
             var responseList = (from accountType in accountTypes
                 select new AccountTypeResponse(accountType.Id, accountType.Name)).ToList();
@@ -99,7 +95,7 @@ namespace BalanceApi.Controllers
             return responseList;
         }
 
-        private AccountTypeResponse _buildResponse(AccountType accountType)
+        private AccountTypeResponse BuildResponse(AccountType accountType)
         {
             return new AccountTypeResponse(accountType.Id, accountType.Name);
         }
